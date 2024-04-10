@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<ruleset name="AI-2024 Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Ensemble de règles à respecter pour l'AI 2024.
+    </description>
+    <exclude-pattern>.*/views/.*</exclude-pattern>
+
+    <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly" />
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
+    <rule ref="category/java/bestpractices.xml/AvoidStringBufferField" />
+    <rule ref="category/java/bestpractices.xml/DefaultLabelNotLastInSwitchStmt" />
+    <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
+    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+        <properties>
+            <property name="maximumAsserts" value="4" />
+        </properties>
+    </rule>
+    <rule ref="category/java/bestpractices.xml/LooseCoupling" />
+        <rule ref="category/java/design.xml/CouplingBetweenObjects">
+        <properties>
+            <property name="threshold" value="7" />
+        </properties>
+    </rule>    
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum" value="30" />
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/NoPackage" />
+    <rule ref="category/java/codestyle.xml/PackageCase" />
+    <rule ref="category/java/codestyle.xml/PrematureDeclaration" />
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <property name="minimum" value="3" />
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn" />
+    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts" />
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="classReportLevel" value="80" />
+            <property name="methodReportLevel" value="7" />
+            <property name="cycloOptions" value="" />
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/DataClass" />    
+    <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray" />
+    <rule ref="category/java/bestpractices.xml/MissingOverride" />
+	<rule ref="category/java/bestpractices.xml/OneDeclarationPerLine" />
+    <rule ref="category/java/bestpractices.xml/LiteralsFirstInComparisons" />
+    <rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault" />
+    <rule ref="category/java/bestpractices.xml/SystemPrintln" />
+    <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
+    <rule ref="category/java/bestpractices.xml/SimplifiableTestAssertion" />
+	<rule ref="category/java/bestpractices.xml/UnusedFormalParameter" />
+    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum" value="30" />
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/NoPackage" />
+    <rule ref="category/java/codestyle.xml/PackageCase" />
+    <rule ref="category/java/codestyle.xml/PrematureDeclaration" />
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <property name="minimum" value="3" />
+        </properties>
+    </rule>
+     <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn" />
+    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts" />
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="classReportLevel" value="80" />
+            <property name="methodReportLevel" value="7" />
+            <property name="cycloOptions" value="" />
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/ExcessiveParameterList">
+        <properties>
+            <property name="minimum" value="5" />
+        </properties>
+    </rule>
+     <rule ref="category/java/design.xml/ExcessivePublicCount">
+        <properties>
+            <property name="minimum" value="16" />
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/GodClass" />
+    <rule ref="category/java/design.xml/ImmutableField" />
+    <rule ref="category/java/design.xml/NcssCount">
+        <properties>
+            <property name="methodReportLevel" value="15" />
+            <property name="classReportLevel" value="250" />
+            <property name="ncssOptions" value="" />
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/SimplifyBooleanReturns" />
+    <rule ref="category/java/design.xml/SimplifyConditional" />
+    <rule ref="category/java/design.xml/SingularField" />
+    <rule ref="category/java/design.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="5" />
+        </properties>
+    </rule>
+        <rule ref="category/java/performance.xml/TooFewBranchesForASwitchStatement">
+        <properties>
+            <property name="minimumNumberCaseForASwitch" value="3" />
+        </properties>
+    </rule>
+    <rule ref="category/java/performance.xml/InefficientEmptyStringCheck" />
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="BeanMembersShouldSerialize" />
+        <exclude name="MissingSerialVersionUID" />
+        <exclude name="UseLocaleWithCaseConversions" />
+    </rule>
+	<rule name="AvoidNonPrivateField"
+	      language="java"
+	      message="Consider private access level for instance field"
+	      class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+	   <description>
+	TODO
+	   </description>
+	   <priority>3</priority>
+	   <properties>
+	      <property name="xpath">
+	         <value>
+	<![CDATA[
+	//FieldDeclaration[@Visibility!="private" and @Static="false"]
+	
+	]]>
+	         </value>
+	      </property>
+	   </properties>
+	</rule>
+	<rule name="AvoidMutableStaticField"
+	          language="java"
+	          message="Add final modifier to turn this field into a constant."
+	          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule" >
+	        <description>
+	            TODO
+	        </description>
+	        <priority>3</priority>
+	        <properties>
+	            <property name="xpath">
+	                <value>
+	                    <![CDATA[
+	//FieldDeclaration[@Final="false" and @Static="true"]
+	]]>
+	                </value>
+	            </property>
+	        </properties>
+	    </rule>
+   </ruleset>
