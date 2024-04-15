@@ -1,23 +1,33 @@
 package hexmo.views;
 
-import hexmo.supervisors.commons.*;
-import hexmo.supervisors.playgame.*;
-import hexmo.views.components.*;
-import hexmo.views.effect.DelegateEffect;
-import hexmo.views.effect.EffectsPlayer;
-import org.helmo.swing.SwingView;
-import org.helmo.swing.engine.Vector2f;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+import org.helmo.swing.SwingView;
+import org.helmo.swing.engine.Vector2f;
+
+import hexmo.supervisors.commons.TileType;
+import hexmo.supervisors.commons.ViewId;
+import hexmo.supervisors.playgame.PlayGameSupervisor;
+import hexmo.supervisors.playgame.PlayGameView;
+import hexmo.views.components.Camera;
+import hexmo.views.components.DataPanel;
+import hexmo.views.components.Drawable;
+import hexmo.views.components.HexSelector;
+import hexmo.views.components.HexTile;
+import hexmo.views.components.RoseBackground;
+import hexmo.views.effect.DelegateEffect;
+import hexmo.views.effect.EffectsPlayer;
 
 
 public class SwingPlayGameView extends SwingView<ViewId> implements PlayGameView {

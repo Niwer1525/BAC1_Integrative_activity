@@ -1,5 +1,8 @@
 package hexmo.supervisors.gameover;
 
+import java.util.Objects;
+
+import hexmo.domains.HexGameFactory;
 import hexmo.supervisors.commons.ViewId;
 
 /**
@@ -7,12 +10,13 @@ import hexmo.supervisors.commons.ViewId;
  * */
 public class GameOverSupervisor {
 	private GameOverView view;
+	private final HexGameFactory gameFactory;
 
 	/**
 	 * 
 	 * */
-	public GameOverSupervisor() {
-		
+	public GameOverSupervisor(HexGameFactory factory) {
+		this.gameFactory = Objects.requireNonNull(factory, "factory is expected to be a reference to a defined factory");
 	}
 	
 	public void setView(GameOverView view) {

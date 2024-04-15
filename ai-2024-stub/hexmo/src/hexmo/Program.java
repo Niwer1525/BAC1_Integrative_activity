@@ -1,14 +1,15 @@
 package hexmo;
 
+import javax.swing.SwingUtilities;
+
+import hexmo.domains.HexGameFactory;
 import hexmo.supervisors.commons.ViewId;
 import hexmo.supervisors.gameover.GameOverSupervisor;
 import hexmo.supervisors.mainmenu.MainMenuSupervisor;
 import hexmo.supervisors.playgame.PlayGameSupervisor;
+import hexmo.views.AppFactory;
 import hexmo.views.MainWindow;
 import hexmo.views.SwingMainWindowFactory;
-import hexmo.views.AppFactory;
-
-import javax.swing.*;
 
 /**
  * Construit et lance l'application réelle.
@@ -25,10 +26,10 @@ public class Program {
      * Une fabrique construisant l'interface utilisateur pour une technologie précise.
      */
     public static void buildAndRun(AppFactory appBuilder) {
-        //TODO : définir les dépendances injectées au moment de construire les superviseurs
-        var menuSupervisor = new MainMenuSupervisor();
-        var playSupervisor = new PlayGameSupervisor();
-        var endSupervisor = new GameOverSupervisor();
+        HexGameFactory gameFactory = new HexGameFactory();
+        var menuSupervisor = new MainMenuSupervisor(gameFactory);
+        var playSupervisor = new PlayGameSupervisor(gameFactory);
+        var endSupervisor = new GameOverSupervisor(gameFactory);
 
         MainWindow main = appBuilder.ofSupervisors("B1UE09 - HexMo",
                 menuSupervisor,

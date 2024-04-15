@@ -4,13 +4,16 @@
 package hexmo.views;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.swing.JFrame;
 
-import hexmo.supervisors.commons.ViewId;
 import org.helmo.swing.SwingView;
 import org.helmo.swing.adapter.MyKeyAdapter;
+
+import hexmo.supervisors.commons.ViewId;
 
 /**
  * Displays views that made up the application.
