@@ -77,7 +77,7 @@ public class PlayGameSupervisor {
 		if(targetTile != null) {
 			/* If it's the first turn */
 			if(this.gameFactory.getCurrentGame().isFirstTurn())
-				tileType = this.gameFactory.getCurrentGame().onFirstTurn(tileType, view.askQuestion(HexGame.FIRST_TURN_QUESTION));
+				tileType = this.gameFactory.getCurrentGame().onFirstTurn(targetTile, tileType, view.askQuestion(HexGame.FIRST_TURN_QUESTION));
 			
 			/* Update the tile */
 			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), tileType);

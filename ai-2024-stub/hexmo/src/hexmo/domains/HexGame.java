@@ -1,7 +1,5 @@
 package hexmo.domains;
 
-import java.util.StringJoiner;
-
 import hexmo.domains.board.HexBoard;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
@@ -48,20 +46,26 @@ public class HexGame {
      */
     public String[] getGameMessages() {
         String[] messages = new String[3];
-
-        StringJoiner sj = new StringJoiner(" ");
-        sj.add(this.player1.getName()).add("(").add(this.player1.getColor().getDisplayName()).add(")");
-        sj.add("vs");
-        sj.add(this.player2.getName()).add("(").add(this.player2.getColor().getDisplayName()).add(")");
-        messages[0] = sj.toString();
-
-        sj = new StringJoiner(" ");
-        sj.add("Au tour de").add(this.turnPlayer.getName()).add("(").add(this.turnPlayer.getColor().getDisplayName()).add(")");
-        messages[1] = sj.toString();
-
-        sj = new StringJoiner(" ");
-        sj.add("Case active (0, 0, 0) Libre"); //TODO
-        messages[2] = sj.toString();
+        messages[0] = String.format("%s (%s) vs %s (%s)",
+            this.player1.getName(), 
+            this.player2.getName(), 
+            this.player1.getColor().getDisplayName(), 
+            this.player2.getColor().getDisplayName()
+        );
+        messages[1] = String.format("Au tour de %s (%s)", this.turnPlayer.getName(), this.turnPlayer.getColor().getDisplayName());
+        
+        String status = "Libre";
+        switch(this.board.getActiveTile().getTileType()) {
+            case BLUE:
+                status = "Bleu";
+                break;
+            case RED:
+                status = "Rouge";
+                break;
+            case UNKNOWN: break;
+            default: break;
+        }
+        messages[2] = String.format("Case active (%d %d %d) %s", 0, 0, 0, status);
 
         return messages;
     }
@@ -85,27 +89,30 @@ public class HexGame {
      * This will check if the current tile is set and if it's the first turn of the game. If so
      * it will set the tile type to the opposite of the player 1 color
      * @param tile The tile to check
+     * @param tileType The tile type to set if it's not the first turn
      * @param playerWantChange If the player want to change the tile type
      * @return The new tile type if the player want to change the tile type, null otherwise
      */
-    public TileType onFirstTurn(TileType tile, boolean playerWantChange) {
-        if(tile == null) throw new IllegalArgumentException("tile cannot be null");
-        if(!this.firstTurn) return tile;
+    public TileType onFirstTurn(HexTile tile, TileType tileType, boolean playerWantChange) {
+        if(tileType == null) throw new IllegalArgumentException("tile cannot be null");
+        if(!this.firstTurn) return tileType;
 
         this.firstTurn = false; // Set the first turn to false
         if(playerWantChange) {
-            if(tile != TileType.UNKNOWN) {
+            if(tileType != TileType.UNKNOWN) {
                 final TileType OPPOSITE_TILE_TYPE = this.getTurnPlayer().getColorAsTileType();
 
                 /* Switch players colors */
                 HexColor temp = this.player1.getColor();
                 this.player1.setColor(this.player2.getColor());
                 this.player2.setColor(temp);
-
+                
+                /* Set the tile and return for visual use */
+                tile.setTileType(OPPOSITE_TILE_TYPE);
                 return OPPOSITE_TILE_TYPE;
             }
         }
-        return tile;
+        return tileType;
     }
 
     /**

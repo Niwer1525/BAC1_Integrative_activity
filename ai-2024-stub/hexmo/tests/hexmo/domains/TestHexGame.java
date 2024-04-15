@@ -64,7 +64,7 @@ public class TestHexGame {
 
         HexGame game2 = new HexGame(3);
         HexTile tile2 = game2.play();
-        TileType type2 = game2.onFirstTurn(tile2.getTileType(), false);
+        TileType type2 = game2.onFirstTurn(tile2, tile2.getTileType(), false);
         assertEquals(TileType.RED, type2);
     }
 
@@ -72,7 +72,7 @@ public class TestHexGame {
     public void test_activateTile_withSwap() {
         HexGame game = new HexGame(3);
         HexTile tile = game.play();
-        TileType type = game.onFirstTurn(tile.getTileType(), true);
+    TileType type = game.onFirstTurn(tile, tile.getTileType(), true);
         assertEquals(TileType.BLUE, type);
     }
 
@@ -80,10 +80,10 @@ public class TestHexGame {
     public void test_activateTile_WithMultipleSwap() {
         HexGame game = new HexGame(3);
         HexTile tile = game.play();
-        TileType type = game.onFirstTurn(tile.getTileType(), true);
-        type = game.onFirstTurn(type, true);
-        type = game.onFirstTurn(type, true);
-        type = game.onFirstTurn(type, true);
+        TileType type = game.onFirstTurn(tile, tile.getTileType(), true);
+        type = game.onFirstTurn(tile, type, true);
+        type = game.onFirstTurn(tile, type, true);
+        type = game.onFirstTurn(tile, type, true);
         assertEquals(TileType.BLUE, type);
     }
 
@@ -97,7 +97,7 @@ public class TestHexGame {
          * should be unsuccessful...
         */
         HexTile tile = game.play();
-        TileType type = game.onFirstTurn(tile.getTileType(), true);
+        TileType type = game.onFirstTurn(tile, tile.getTileType(), true);
         assertEquals(0, game.getBoard().getActiveTile().getQ());
         assertEquals(0, game.getBoard().getActiveTile().getR());
         assertEquals(TileType.BLUE, type);
