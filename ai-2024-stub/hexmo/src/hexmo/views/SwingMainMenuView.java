@@ -3,23 +3,24 @@ package hexmo.views;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.*;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.event.KeyEvent;
 import java.io.Serial;
-import java.util.*;
-import java.util.stream.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.ImageIcon;
 import javax.swing.Timer;
 
-import hexmo.supervisors.mainmenu.MainMenuSupervisor;
-import hexmo.supervisors.mainmenu.MainMenuView;
-import hexmo.supervisors.commons.*;
-import hexmo.views.components.*;
 import org.helmo.swing.SwingView;
 import org.helmo.swing.effect.MoveToEffect;
+
+import hexmo.supervisors.commons.ViewId;
+import hexmo.supervisors.mainmenu.MainMenuSupervisor;
+import hexmo.supervisors.mainmenu.MainMenuView;
+import hexmo.views.components.DataPanel;
+import hexmo.views.components.ItemSelector;
+import hexmo.views.components.MenuItem;
 
 /**
  * Implémentation Swing du menu principal.

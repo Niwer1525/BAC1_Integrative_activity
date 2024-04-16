@@ -62,4 +62,9 @@ public class HexTile {
     public int getR() {
         return this.coords.getR();
     }
+
+    @Override
+    public String toString() {
+        return String.format("Tile at [%s] with type %s", this.coords, this.type);
+    }
 }

@@ -1,24 +1,20 @@
 package hexmo.views;
 
-import hexmo.supervisors.commons.ViewId;
-import hexmo.supervisors.gameover.*;
-import hexmo.views.components.DataPanel;
-
-import org.helmo.swing.SwingView;
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serial;
-import java.util.Map;
 import java.util.Objects;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
+
+import org.helmo.swing.SwingView;
+
+import hexmo.supervisors.commons.ViewId;
+import hexmo.supervisors.gameover.GameOverSupervisor;
+import hexmo.supervisors.gameover.GameOverView;
+import hexmo.views.components.DataPanel;
 
 public class SwingGameOverView extends SwingView<ViewId> implements GameOverView {
     @Serial

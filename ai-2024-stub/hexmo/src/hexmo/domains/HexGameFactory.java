@@ -18,4 +18,9 @@ public class HexGameFactory {
     public HexGame getCurrentGame() {
         return game;
     }
+
+    @Override
+    public String toString() {
+        return String.format("HexGameFactory{game=%s}", game);
+    }
 }

@@ -20,7 +20,7 @@ public class PlayGameSupervisor {
 	private final HexGameFactory gameFactory;
 
 	public PlayGameSupervisor(HexGameFactory factory) {
-		this.gameFactory = Objects.requireNonNull(factory, "factory is expected to be a reference to a defined factory");
+		this.gameFactory = Objects.requireNonNull(factory, "Factory is expected to be a reference to a defined factory");
 	}
 
 	/**
@@ -40,13 +40,10 @@ public class PlayGameSupervisor {
 			view.clearTiles();
 			view.setTileAt(0, 0, TileType.UNKNOWN);
 			view.setActiveTile(0, 0);
-			for(HexTile tile : this.gameFactory.getCurrentGame().getBoard().getTiles())
+			for(HexTile tile : this.gameFactory.getCurrentGame().getBoard().getTiles()) {
 				view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), tile.getTileType());
-	
-			//TODO : afficher le joueur qui a la main
-			//TODO : afficher les coordonnées axiale courante
-			//TODO : afficher les coordonnées axiales de la tuile active
-			view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
+			}
+			this.updateViewMessages();
 		}
 	}
 
@@ -60,9 +57,7 @@ public class PlayGameSupervisor {
 		HexTile targetTile = this.gameFactory.getCurrentGame().getBoard().moveTo(dx, dy);
 		if(targetTile != null) {
 			this.view.setActiveTile(targetTile.getCoords().asX(), targetTile.getCoords().asY());
-
-			/* Update messages */
-			this.view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
+			this.updateViewMessages();
 		}
 	}
 
@@ -81,9 +76,7 @@ public class PlayGameSupervisor {
 			
 			/* Update the tile */
 			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), tileType);
-
-			/* Update messages */
-			this.view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
+			this.updateViewMessages();
 		}
 	}
 
@@ -95,5 +88,9 @@ public class PlayGameSupervisor {
 	 * */
 	public void onStop() {
 		view.goTo(ViewId.MAIN_MENU);
+	}
+
+	private void updateViewMessages() {
+		this.view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
 	}
 }

@@ -1,5 +1,6 @@
 package hexmo.domains.board;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.tngtech.archunit.thirdparty.com.google.common.collect.Lists;
@@ -10,6 +11,22 @@ import hexmo.supervisors.commons.TileType;
 
 /**
  * Represent a game board, containing all the tiles
+ * 
+ * It-1-q1 : 
+ *  Plateau R=0 : Contiendra 1 case, la case de départ [0, 0] sera toujours contenue
+ *  Plateau R=1 : Contiendra 7 cases au total, 6 de par le rayon et la case de départ [0, 0]
+ *  Plateau R=2 : Contiendra 19 cases au total, 12 de par le rayon et la case de départ [0, 0]
+ *  Plateau R=x :
+ *         Contiendra :
+ * 
+ * It-1-q2 : Choix collection (interface + implémentation)
+ * Dans un premier temps, j'ai éliminé les Sets, Queues et Trees car je n'ai nullement besoin d'un tri de plus, 
+ * ma contrainte d'unicité est respecté car le traitement de l'ajout de cases est controllé.
+ * Le choix de List face à Map me parait plus simple utiliser, je n'ai alors pas besoin de créer un nouvel objet
+ * AxialCoordinates à chaque mouvement (Si j'avais par exemple choisi une Map<AxialCoordinates, HexTile>). Cependant celà requière
+ * de parcourir toutes les tuiles à chaque mouvement.
+ * 
+ * L'implémentation choisie pour List est ArrayList car je n'ai n'ai pas besoin d'ordre spécifique
  */
 public class HexBoard {
     private final List<HexTile> tiles;
@@ -56,8 +73,15 @@ public class HexBoard {
     /**
      * @return All the tiles in this board
      */
-    public List<HexTile> getTiles() {
+    public Collection<HexTile> getTiles() {
         return tiles;
+    }
+
+    /**
+     * @return The amount of tiles contained in this board
+     */
+    public int getTilesCount() {
+        return this.tiles.size();
     }
 
     /**
@@ -65,5 +89,10 @@ public class HexBoard {
      */
     public HexTile getActiveTile() {
         return this.activeTile;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("HexBoard{tiles=%s, activeTile=%s}", tiles, activeTile);
     }
 }

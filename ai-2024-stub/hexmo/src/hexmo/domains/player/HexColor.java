@@ -1,7 +1,5 @@
 package hexmo.domains.player;
 
-import java.util.Random;
-
 /**
  * Represent the two colors of the game
  * @see HexPlayer
@@ -23,21 +21,13 @@ public enum HexColor {
      * @return The opposite color of the current one
      */
     public HexColor getOpposite() {
-        if(this == RED) return BLUE;
-        return RED;
+        return this == RED ? BLUE : RED;
     }
 
     /**
-     * @return Choose one of the two colors
-     * @deprecated
+     * @return The display name of the color
      */
-    public static HexColor getRandomColor() {
-        Random rand = new Random();
-        HexColor[] colors = HexColor.values();
-        return colors[rand.nextInt(0, colors.length)];
-    }
-
     public String getDisplayName() {
-        return displayName;
+        return this.displayName;
     }
 }

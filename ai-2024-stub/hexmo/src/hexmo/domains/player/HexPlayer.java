@@ -48,4 +48,9 @@ public class HexPlayer {
     public void setColor(HexColor color) {
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", name, color.getDisplayName());
+    }
 }

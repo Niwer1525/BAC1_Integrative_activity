@@ -18,16 +18,28 @@ public class TestHexGame {
     public void test_newGameR0_WithFirstPlayer() {
         HexGame game = new HexGame(0);
         assertEquals(1, // This should be 1 since there is at least the center tile
-            game.getBoard().getTiles().size()
+            game.getBoard().getTilesCount()
         );
         assertNotNull(game.getTurnPlayer());
+    }
+
+    @Test
+    public void test_newGameRAlgo() {
+        HexGame game = new HexGame(1);
+        assertEquals(7,
+            game.getBoard().getTilesCount()
+        );
+        HexGame game2 = new HexGame(2);
+        assertEquals(19,
+            game2.getBoard().getTilesCount()
+        );
     }
 
     @Test
     public void test_newGameR3_WithFirstPlayer() {
         HexGame game = new HexGame(3);
         assertEquals(37,
-            game.getBoard().getTiles().size()
+            game.getBoard().getTilesCount()
         );
         assertNotNull(game.getTurnPlayer());
     }
@@ -36,7 +48,7 @@ public class TestHexGame {
     public void test_newGameR4_WithFirstPlayer() {
         HexGame game = new HexGame(4);
         assertEquals(61,
-            game.getBoard().getTiles().size()
+            game.getBoard().getTilesCount()
         );
         assertNotNull(game.getTurnPlayer());
     }
@@ -45,7 +57,7 @@ public class TestHexGame {
     public void test_newGameR5_WithFirstPlayer() {
         HexGame game = new HexGame(5);
         assertEquals(91,
-            game.getBoard().getTiles().size()
+            game.getBoard().getTilesCount()
         );
         assertNotNull(game.getTurnPlayer());
     }

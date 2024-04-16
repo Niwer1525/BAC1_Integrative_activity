@@ -47,4 +47,9 @@ public class AxialCoordinates {
     public int getR() {
         return r;
     }
+
+    @Override
+    public String toString() {
+        return String.format("q: %d r: %d", q, r);
+    }
 }
