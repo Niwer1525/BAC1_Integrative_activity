@@ -46,6 +46,7 @@ public class HexPlayer {
      * @param color The new color of the player
      */
     public void setColor(HexColor color) {
+        if(color == null) return;
         this.color = color;
     }
 

@@ -3,7 +3,7 @@ package hexmo.supervisors.playgame;
 import java.util.Objects;
 
 import hexmo.domains.HexGame;
-import hexmo.domains.HexGameFactory;
+import hexmo.domains.IHexGameFactory;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.supervisors.commons.TileType;
 import hexmo.supervisors.commons.ViewId;
@@ -17,9 +17,9 @@ import hexmo.supervisors.commons.ViewId;
 public class PlayGameSupervisor {
 
 	private PlayGameView view;
-	private final HexGameFactory gameFactory;
+	private final IHexGameFactory gameFactory;
 
-	public PlayGameSupervisor(HexGameFactory factory) {
+	public PlayGameSupervisor(IHexGameFactory factory) {
 		this.gameFactory = Objects.requireNonNull(factory, "Factory is expected to be a reference to a defined factory");
 	}
 
@@ -40,6 +40,7 @@ public class PlayGameSupervisor {
 			view.clearTiles();
 			view.setTileAt(0, 0, TileType.UNKNOWN);
 			view.setActiveTile(0, 0);
+
 			for(HexTile tile : this.gameFactory.getCurrentGame().getBoard().getTiles()) {
 				view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), tile.getTileType());
 			}
@@ -67,15 +68,11 @@ public class PlayGameSupervisor {
 	 * <p>Ne fait rien si la case active a déjà été affectée.</p>
 	 * */
 	public void onSet() {
-		TileType tileType = this.gameFactory.getCurrentGame().getTurnPlayer().getColorAsTileType();
-		HexTile targetTile = this.gameFactory.getCurrentGame().play();
+		HexTile targetTile = this.gameFactory.getCurrentGame().play(
+			this.gameFactory.getCurrentGame().isFirstTurn() ? view.askQuestion(HexGame.FIRST_TURN_QUESTION) : false
+		);
 		if(targetTile != null) {
-			/* If it's the first turn */
-			if(this.gameFactory.getCurrentGame().isFirstTurn())
-				tileType = this.gameFactory.getCurrentGame().onFirstTurn(targetTile, tileType, view.askQuestion(HexGame.FIRST_TURN_QUESTION));
-			
-			/* Update the tile */
-			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), tileType);
+			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), targetTile.getTileType());
 			this.updateViewMessages();
 		}
 	}

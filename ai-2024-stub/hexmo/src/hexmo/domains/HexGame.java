@@ -53,8 +53,8 @@ public class HexGame {
         /* Write messages */
         messages[0] = String.format("%s (%s) vs %s (%s)",
             this.player1.getName(),
-            this.player2.getName(),
             this.player1.getColor().getDisplayName(),
+            this.player2.getName(),
             this.player2.getColor().getDisplayName()
         );
         messages[1] = String.format("Au tour de %s (%s)", this.turnPlayer.getName(), this.turnPlayer.getColor().getDisplayName());
@@ -68,34 +68,23 @@ public class HexGame {
         return messages;
     }
 
-    /**
-     * Play the current tile, It will change the color if the tile is <code>unknown</code> (i.e. the tile is not played yet)
-     * The new color will be RED or BLUE depending on the current player
-     * @return The tile that has been played or null if the tile is already played
-     */
-    public HexTile play() {
+    private HexTile onPlayTile() {
         HexTile currentTile = this.board.getActiveTile();
-        if(currentTile !=null && currentTile.getTileType() == TileType.UNKNOWN) {
+        if(currentTile == null) return null;
+        if(currentTile.getTileType() == TileType.UNKNOWN) {
             currentTile.setTileType(this.turnPlayer.getColorAsTileType());
+
+            /* Next turn */
             this.switchTurn();
-            return currentTile;
         }
-        return null;
+        return currentTile;
     }
 
-    /**
-     * This will check if the current tile is set and if it's the first turn of the game. If so
-     * it will set the tile type to the opposite of the player 1 color
-     * @param tile The tile to check
-     * @param tileType The tile type to set if it's not the first turn
-     * @param playerWantChange If the player want to change the tile type
-     * @return The new tile type if the player want to change the tile type, the <code>tileType<</code> otherwise
-     */
-    public TileType onFirstTurn(HexTile tile, TileType tileType, boolean playerWantChange) {
+    private TileType onFirstTurn(HexTile tile, TileType tileType, boolean wantSwap) {
         if(!this.firstTurn || tile == null) return tileType == null ? TileType.UNKNOWN : tileType;
 
         this.firstTurn = false; // Set the first turn to false
-        if(playerWantChange && tileType != TileType.UNKNOWN) {
+        if(wantSwap && tileType != TileType.UNKNOWN) {
             /* Save the color of the player for the tile type */
             final TileType OPPOSITE_TILE_TYPE = this.getTurnPlayer().getColorAsTileType();
 
@@ -109,8 +98,25 @@ public class HexGame {
         return tileType;
     }
 
-    public void set() {
-        
+    /**
+     * Play the current active tile
+     * @param wantSwap If the user want to swap
+     * @return The played tile
+     */
+    public HexTile play(boolean wantSwap) {
+        TileType tileType = this.turnPlayer.getColorAsTileType();
+		HexTile targetTile = this.onPlayTile();
+		if(targetTile == null) return null;
+
+        /* If it's the first turn */
+        if(this.firstTurn)
+            tileType = this.onFirstTurn(targetTile, tileType, wantSwap);
+
+        /* Update the tile */
+        if(targetTile.getTileType() == TileType.UNKNOWN)
+            targetTile.setTileType(tileType);
+
+        return targetTile;
     }
 
     /**

@@ -1,20 +1,14 @@
 package hexmo.domains;
 
-public class HexGameFactory {
+public class HexGameFactory implements IHexGameFactory {
 
     private HexGame game;
 
-    /**
-     * Start a new game with the specified board size
-     * @param boardSize The board size
-     */
     public void startNewGame(int boardSize) {
         this.game = new HexGame(boardSize);
     }
 
-    /**
-     * @return the current playing game
-     */
+    @Override
     public HexGame getCurrentGame() {
         return game;
     }

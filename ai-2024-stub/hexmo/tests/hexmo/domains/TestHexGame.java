@@ -1,7 +1,10 @@
 package hexmo.domains;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -69,34 +72,28 @@ public class TestHexGame {
     @Test
     public void test_activateTile_withoutSwap() {
         HexGame game = new HexGame(3);
-        HexTile tile = game.play();
+        HexTile tile = game.play(false);
         assertEquals(TileType.RED,
             tile.getTileType()
         );
-
-        HexGame game2 = new HexGame(3);
-        HexTile tile2 = game2.play();
-        TileType type2 = game2.onFirstTurn(tile2, tile2.getTileType(), false);
-        assertEquals(TileType.RED, type2);
     }
 
     @Test
     public void test_activateTile_withSwap() {
         HexGame game = new HexGame(3);
-        HexTile tile = game.play();
-    TileType type = game.onFirstTurn(tile, tile.getTileType(), true);
-        assertEquals(TileType.BLUE, type);
+        HexTile tile = game.play(true);
+        assertEquals(TileType.BLUE, tile.getTileType());
     }
 
     @Test
-    public void test_activateTile_WithMultipleSwap() {
+    public void test_activateTile_withMultipleSwap() {
         HexGame game = new HexGame(3);
-        HexTile tile = game.play();
-        TileType type = game.onFirstTurn(tile, tile.getTileType(), true);
-        type = game.onFirstTurn(tile, type, true);
-        type = game.onFirstTurn(tile, type, true);
-        type = game.onFirstTurn(tile, type, true);
-        assertEquals(TileType.BLUE, type);
+        HexTile tile = game.play(true);
+        tile = game.play(false);
+        tile = game.play(true);
+        tile = game.play(false);
+        tile = game.play(true);
+        assertEquals(TileType.BLUE, tile.getTileType());
     }
 
     @Test
@@ -105,13 +102,81 @@ public class TestHexGame {
         game.getBoard().moveTo(255, 0);
 
         /* 
-         * This will change the color of the 0 0 case since the "moveTo" 
+         * This will should be 0 0 case since the "moveTo" 
          * should be unsuccessful...
         */
-        HexTile tile = game.play();
-        TileType type = game.onFirstTurn(tile, tile.getTileType(), true);
+        HexTile tile = game.play(true);
         assertEquals(0, game.getBoard().getActiveTile().getQ());
         assertEquals(0, game.getBoard().getActiveTile().getR());
-        assertEquals(TileType.BLUE, type);
+        assertEquals(TileType.BLUE, tile.getTileType()); // Should be the defaut color
+    }
+
+    @Test
+    public void test_firstTurn() {
+        HexGame game = new HexGame(3);
+        assertTrue(game.isFirstTurn());
+        
+        game.getBoard().moveTo(0, 0);
+        assertTrue(game.isFirstTurn());
+
+        game.play(true);
+        assertFalse(game.isFirstTurn());
+
+        game.play(true);
+        assertFalse(game.isFirstTurn());
+    }
+
+    @Test
+    public void test_getMessages() {
+        HexGame game = new HexGame(3);
+        assertEquals(3, game.getGameMessages().length);
+
+        /* Main tile */
+        assertArrayEquals(new String[] { 
+            "P1 (rouge) vs P2 (bleu)",
+            "Au tour de P1 (rouge)",
+            "Case active (q: 0 r: 0 0) Libre"
+        }, game.getGameMessages());
+
+        /* Move to [1, 0] */
+        game.getBoard().moveTo(1, 0);
+        assertArrayEquals(new String[] { 
+            "P1 (rouge) vs P2 (bleu)",
+            "Au tour de P1 (rouge)",
+            "Case active (q: 1 r: 0 0) Libre"
+        }, game.getGameMessages());
+
+        /* Play and swap */
+        game.play(true);
+        assertArrayEquals(new String[] { 
+            "P1 (bleu) vs P2 (rouge)",
+            "Au tour de P2 (rouge)",
+            "Case active (q: 1 r: 0 0) Bleu"
+        }, game.getGameMessages());
+
+        /* Move to [2, 0] */
+        game.getBoard().moveTo(1, 0);
+        assertArrayEquals(new String[] { 
+            "P1 (bleu) vs P2 (rouge)",
+            "Au tour de P2 (rouge)",
+            "Case active (q: 2 r: 0 0) Libre"
+        }, game.getGameMessages());
+
+        /* Play and swap (Swap shouldn't affect */
+        game.play(true);
+        assertArrayEquals(new String[] { 
+            "P1 (bleu) vs P2 (rouge)",
+            "Au tour de P1 (bleu)",
+            "Case active (q: 2 r: 0 0) Rouge"
+        }, game.getGameMessages());
+    }
+
+    @Test
+    public void test_toString() {
+        HexGame game = new HexGame(3);
+        assertEquals("Game: P1 (rouge) vs P2 (bleu)", game.toString());
+        
+        game.play(true);
+        assertEquals("Game: P1 (bleu) vs P2 (rouge)", game.toString());
     }
 }

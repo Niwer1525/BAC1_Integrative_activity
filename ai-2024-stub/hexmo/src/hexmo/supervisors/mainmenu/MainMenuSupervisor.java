@@ -3,7 +3,7 @@ package hexmo.supervisors.mainmenu;
 import java.util.List;
 import java.util.Objects;
 
-import hexmo.domains.HexGameFactory;
+import hexmo.domains.IHexGameFactory;
 import hexmo.supervisors.commons.ViewId;
 
 /**
@@ -15,15 +15,14 @@ public class MainMenuSupervisor {
 	public static final int EXIT_ITEM = 3;
 
 	private MainMenuView view;
-	private final HexGameFactory gameFactory;
+	private final IHexGameFactory gameFactory;
 
-	public MainMenuSupervisor(HexGameFactory factory) {
+	public MainMenuSupervisor(IHexGameFactory factory) {
 		this.gameFactory = Objects.requireNonNull(factory, "factory is expected to be a reference to a defined factory");
 	}
 
 	public void setView(MainMenuView view) {
 		this.view = Objects.requireNonNull(view, "view is expected to be a reference to a defined view");
-		//TODO : définir les items de la vue.
 		this.view.setItems(List.of(
 			"Nouvelle partie (r=3)",
 			"Nouvelle partie (r=4)",
@@ -41,10 +40,7 @@ public class MainMenuSupervisor {
 		if(EXIT_ITEM == itemPos) view.confirmExit();
 
 		/* Create the game and swithc view */
-		//TODO : Démarrer une nouvelle partie
-		gameFactory.startNewGame(3 + itemPos);
-		
-		//TODO : naviguer vers l'écran de jeu
+		gameFactory.startNewGame(3 + itemPos);		
 		view.goTo(ViewId.PLAY_GAME);
 	}
 }

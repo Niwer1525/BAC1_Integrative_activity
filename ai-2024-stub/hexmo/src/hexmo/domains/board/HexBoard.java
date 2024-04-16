@@ -1,6 +1,5 @@
 package hexmo.domains.board;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.tngtech.archunit.thirdparty.com.google.common.collect.Lists;
@@ -17,7 +16,14 @@ import hexmo.supervisors.commons.TileType;
  *  Plateau R=1 : Contiendra 7 cases au total, 6 de par le rayon et la case de départ [0, 0]
  *  Plateau R=2 : Contiendra 19 cases au total, 12 de par le rayon et la case de départ [0, 0]
  *  Plateau R=x :
- *         Contiendra :
+ *      Généralison :
+ *      La somme des r premiers nombres entiers se calcule ainsi : (x * (x + 1)) / 2
+ *      Ensuite lon peut calculer notre hexagone en prenant en compte sa case centrale et 6 autre cases pour les cotés
+ *      ce qui donne cette formue : 1 + 6 * (x * (x + 1)) / 2
+ *      Vérifications :
+ *            1 + 6 * (0 * (0 + 1)) / 2 = 1
+ *            1 + 6 * (1 * (1 + 1)) / 2 = 7
+ *            1 + 6 * (2 * (2 + 1)) / 2 = 19
  * 
  * It-1-q2 : Choix collection (interface + implémentation)
  * Dans un premier temps, j'ai éliminé les Sets, Queues et Trees car je n'ai nullement besoin d'un tri de plus, 
@@ -27,6 +33,9 @@ import hexmo.supervisors.commons.TileType;
  * de parcourir toutes les tuiles à chaque mouvement.
  * 
  * L'implémentation choisie pour List est ArrayList car je n'ai n'ai pas besoin d'ordre spécifique
+ * 
+ * It-1-q3 : Composante "S"
+ *  Inexistante ?
  */
 public class HexBoard {
     private final List<HexTile> tiles;
@@ -73,8 +82,8 @@ public class HexBoard {
     /**
      * @return All the tiles in this board
      */
-    public Collection<HexTile> getTiles() {
-        return tiles;
+    public List<HexTile> getTiles() {
+        return List.copyOf(tiles);
     }
 
     /**

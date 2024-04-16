@@ -3,6 +3,7 @@ package hexmo;
 import javax.swing.SwingUtilities;
 
 import hexmo.domains.HexGameFactory;
+import hexmo.domains.IHexGameFactory;
 import hexmo.supervisors.commons.ViewId;
 import hexmo.supervisors.gameover.GameOverSupervisor;
 import hexmo.supervisors.mainmenu.MainMenuSupervisor;
@@ -26,7 +27,7 @@ public class Program {
      * Une fabrique construisant l'interface utilisateur pour une technologie précise.
      */
     public static void buildAndRun(AppFactory appBuilder) {
-        HexGameFactory gameFactory = new HexGameFactory();
+        IHexGameFactory gameFactory = new HexGameFactory();
         var menuSupervisor = new MainMenuSupervisor(gameFactory);
         var playSupervisor = new PlayGameSupervisor(gameFactory);
         var endSupervisor = new GameOverSupervisor(gameFactory);
