@@ -1,7 +1,5 @@
 package hexmo.domains.player;
 
-import hexmo.supervisors.commons.TileType;
-
 /**
  * Represent a player in the game
  */
@@ -33,14 +31,7 @@ public class HexPlayer {
     public HexColor getColor() {
         return this.color;
     }
-
-    /**
-     * @return The color of the player as a TileType
-     */
-    public TileType getColorAsTileType() {
-        return this.color == HexColor.RED ? TileType.RED : TileType.BLUE;
-    }
-
+    
     /**
      * Set the color of the player
      * @param color The new color of the player

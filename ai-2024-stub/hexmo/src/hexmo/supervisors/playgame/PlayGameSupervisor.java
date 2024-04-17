@@ -5,13 +5,13 @@ import java.util.Objects;
 import hexmo.domains.HexGame;
 import hexmo.domains.IHexGameFactory;
 import hexmo.domains.board.tiles.HexTile;
+import hexmo.domains.player.HexColor;
 import hexmo.supervisors.commons.TileType;
 import hexmo.supervisors.commons.ViewId;
 
 /**
  * Réagit aux événements utilisateurs de sa vue en mettant à jour une partie en cours et fournit à sa vue les données à afficher.
  * 
- * IT-1-q4 :
  * 
  */
 public class PlayGameSupervisor {
@@ -34,6 +34,9 @@ public class PlayGameSupervisor {
 	 * Méthode appelée juste avant que la vue de ce superviseur soit affichée à l'écran.
 	 * <p>Le superviseur affiche les données de départ du jeu (cout de la case active, nombre de trésors, bourse du joueur, etc.).
 	 * Il dessine également les cases et indique quelle case est active.</p>
+	 * 
+	 * IT-1-q4 :
+	 * 
 	 * */
 	public void onEnter(ViewId fromView) {
 		if (ViewId.MAIN_MENU == fromView) {
@@ -41,8 +44,8 @@ public class PlayGameSupervisor {
 			view.setTileAt(0, 0, TileType.UNKNOWN);
 			view.setActiveTile(0, 0);
 
-			for(HexTile tile : this.gameFactory.getCurrentGame().getBoard().getTiles()) {
-				view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), tile.getTileType());
+			for(HexTile tile : this.gameFactory.getCurrentGame().getTiles()) {
+				view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), this.asTileType(tile.getColor()));
 			}
 			this.updateViewMessages();
 		}
@@ -55,7 +58,7 @@ public class PlayGameSupervisor {
 	 * <p>Cette méthode doit vérifier que les coordonnées calculées correspondent bien à une case du terrain.</p>
 	 * */
 	public void onMove(int dx, int dy) {
-		HexTile targetTile = this.gameFactory.getCurrentGame().getBoard().moveTo(dx, dy);
+		HexTile targetTile = this.gameFactory.getCurrentGame().moveTo(dx, dy);
 		if(targetTile != null) {
 			this.view.setActiveTile(targetTile.getCoords().asX(), targetTile.getCoords().asY());
 			this.updateViewMessages();
@@ -72,11 +75,10 @@ public class PlayGameSupervisor {
 			this.gameFactory.getCurrentGame().isFirstTurn() ? view.askQuestion(HexGame.FIRST_TURN_QUESTION) : false
 		);
 		if(targetTile != null) {
-			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), targetTile.getTileType());
+			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), this.asTileType(targetTile.getColor()));
 			this.updateViewMessages();
 		}
 	}
-
 
 	/**
 	 * Méthode appelée par la vue quand l'utilisateur souhaite interrompre la partie.
@@ -89,5 +91,14 @@ public class PlayGameSupervisor {
 
 	private void updateViewMessages() {
 		this.view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
+	}
+
+	private TileType asTileType(HexColor color) {
+		switch (color) {
+			case BLUE: return TileType.BLUE;
+			case RED: return TileType.RED;
+			case UNKNOWN: return TileType.UNKNOWN;
+			default: return TileType.UNKNOWN;
+		}
 	}
 }

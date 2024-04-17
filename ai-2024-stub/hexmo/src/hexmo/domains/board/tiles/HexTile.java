@@ -1,6 +1,6 @@
 package hexmo.domains.board.tiles;
 
-import hexmo.supervisors.commons.TileType;
+import hexmo.domains.player.HexColor;
 
 /**
  * Represent a tile on the board
@@ -8,14 +8,14 @@ import hexmo.supervisors.commons.TileType;
 public class HexTile {
 
     private final AxialCoordinates coords;
-    private TileType type;
+    private HexColor type;
 
     /**
      * Create a new tile with the given coordinates and type
      * @param coords The coordinates of the tile
      * @param type The type of the tile
      */
-    public HexTile(AxialCoordinates coords, TileType type) {
+    public HexTile(AxialCoordinates coords, HexColor type) {
         this.coords = coords;
         this.type = type;
     }
@@ -24,14 +24,14 @@ public class HexTile {
      * Update the color of this tile
      * @param type The new tile type (Color)
      */
-    public void setTileType(TileType type) {
+    public void setColor(HexColor type) {
         this.type = type;
     }
 
     /**
      * @return The current tile type (Color)
      */
-    public TileType getTileType() {
+    public HexColor getColor() {
         return this.type;
     }
 
@@ -39,7 +39,7 @@ public class HexTile {
      * @return True if the tile is avalbile to be claimed
      */
     public boolean isEmpty() {
-        return this.type == TileType.UNKNOWN;
+        return this.type == HexColor.UNKNOWN;
     }
 
     /**
@@ -61,6 +61,13 @@ public class HexTile {
      */
     public int getR() {
         return this.coords.getR();
+    }
+
+    /**
+     * @return The S component of the tile
+     */
+    public int getS() {
+        return this.coords.getS();
     }
 
     @Override

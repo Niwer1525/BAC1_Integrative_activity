@@ -7,6 +7,7 @@ public class AxialCoordinates {
 
     private final int q;
     private final int r;
+    private final int s;
 
     /**
      * Create a new AxialCoordinates with the given <code>Q</code> and <code>R</code>
@@ -16,6 +17,7 @@ public class AxialCoordinates {
     public AxialCoordinates(int q, int r) {
         this.q = q;
         this.r = r;
+        this.s = -q - r;
     }
 
     /**
@@ -48,8 +50,31 @@ public class AxialCoordinates {
         return r;
     }
 
+    /*
+     * @return The <code>S</code> value
+     */
+    public int getS() {
+        return s;
+    }
+
     @Override
     public String toString() {
         return String.format("q: %d r: %d", q, r);
+    }
+
+    @Override
+    public int hashCode() {
+        return q * 31 + r;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) || (obj instanceof AxialCoordinates coords && coords.q == q && coords.r == r);
+    }
+
+    public static AxialCoordinates fromXYCoords(int x, int y) {
+        int q = (int)(x / (Math.sqrt(3) / 2.0));
+        int r = (int)(y / (3.0 / 2.0)) + y;
+        return new AxialCoordinates(q, r);
     }
 }

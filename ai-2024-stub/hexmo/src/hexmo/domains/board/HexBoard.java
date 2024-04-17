@@ -1,12 +1,12 @@
 package hexmo.domains.board;
 
+import java.util.HashMap;
 import java.util.List;
-
-import com.tngtech.archunit.thirdparty.com.google.common.collect.Lists;
+import java.util.Map;
 
 import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
-import hexmo.supervisors.commons.TileType;
+import hexmo.domains.player.HexColor;
 
 /**
  * Represent a game board, containing all the tiles
@@ -26,19 +26,18 @@ import hexmo.supervisors.commons.TileType;
  *            1 + 6 * (2 * (2 + 1)) / 2 = 19
  * 
  * It-1-q2 : Choix collection (interface + implémentation)
- * Dans un premier temps, j'ai éliminé les Sets, Queues et Trees car je n'ai nullement besoin d'un tri de plus, 
+ * Dans un premier temps, j'ai éliminé les Sets, Queues et Trees car je n'ai nullement besoin d'un tri de plus,
  * ma contrainte d'unicité est respecté car le traitement de l'ajout de cases est controllé.
- * Le choix de List face à Map me parait plus simple utiliser, je n'ai alors pas besoin de créer un nouvel objet
- * AxialCoordinates à chaque mouvement (Si j'avais par exemple choisi une Map<AxialCoordinates, HexTile>). Cependant celà requière
- * de parcourir toutes les tuiles à chaque mouvement.
- * 
- * L'implémentation choisie pour List est ArrayList car je n'ai n'ai pas besoin d'ordre spécifique
+ * Le choix de entre List et Map est plus difficile, car les deux peuvent être utilisés pour stocker des données
+ * Cependant la Map est plus adaptée pour stocker des données de type clé-valeur, et ici il peut être intéressant de récupérer une tuile par ses coordonnées
+ * De plus la map permet d'éviter le parcours de la liste pour retrouver une tuile, ce qui est plus efficace
+ * N.B : Le choix de la HashMap est plus approprié qu'un TreeMap car je n'ai pas besoin de trier les tuiles
  * 
  * It-1-q3 : Composante "S"
  *  Inexistante ?
  */
 public class HexBoard {
-    private final List<HexTile> tiles;
+    private final Map<AxialCoordinates, HexTile> tiles;
     private HexTile activeTile = null;
 
     /**
@@ -46,14 +45,14 @@ public class HexBoard {
      * @param boardSize The size of the board
      */
     public HexBoard(int boardSize) {
-        this.tiles = Lists.newArrayList();
+        this.tiles = new HashMap<>();
 
         /* Adjusted loop limits for creating a hexagon */
         for (int q = -boardSize; q <= boardSize; q++) {
             for (int r = Math.max(-boardSize, -q - boardSize); r <= Math.min(boardSize, -q + boardSize); r++) {
                 AxialCoordinates axialCoords = new AxialCoordinates(q, r);
-                HexTile tile = new HexTile(axialCoords, TileType.UNKNOWN);
-                this.tiles.add(tile);
+                HexTile tile = new HexTile(axialCoords, HexColor.UNKNOWN);
+                this.tiles.put(axialCoords, tile);
                 if(q == 0 && r == 0) this.activeTile = tile; // Set the active tile to the default one (0, 0)
             }
         }
@@ -66,14 +65,11 @@ public class HexBoard {
      * @return The target tile, Or null if outside the board dimensions
      */
     public HexTile moveTo(int dx, int dy) {
-        int dq = (int)(dx / (Math.sqrt(3) / 2.0));
-        int dr = (int)(dy / (3.0 / 2.0)) + dy;
-
-        for(HexTile tile : this.tiles) {
-            if(tile.getQ() == this.activeTile.getQ() + dq && tile.getR() == this.activeTile.getR() + dr) {
-                this.activeTile = tile;
-                return tile;
-            }
+        AxialCoordinates coords = AxialCoordinates.fromXYCoords(dx, dy);
+        HexTile tile = getTileAt(this.activeTile.getQ() + coords.getQ(), this.activeTile.getR() + coords.getR());
+        if(tile != null) {
+            this.activeTile = tile;
+            return tile;
         }
 
         return null;
@@ -83,14 +79,7 @@ public class HexBoard {
      * @return All the tiles in this board
      */
     public List<HexTile> getTiles() {
-        return List.copyOf(tiles);
-    }
-
-    /**
-     * @return The amount of tiles contained in this board
-     */
-    public int getTilesCount() {
-        return this.tiles.size();
+        return List.copyOf(tiles.values());
     }
 
     /**
@@ -102,6 +91,10 @@ public class HexBoard {
 
     @Override
     public String toString() {
-        return String.format("HexBoard{tiles=%s, activeTile=%s}", tiles, activeTile);
+        return String.format("HexBoard{tiles=%s, activeTile=%s}", tiles.size(), activeTile);
+    }
+    
+    private HexTile getTileAt(int q, int r) {
+        return this.tiles.get(new AxialCoordinates(q, r));
     }
 }

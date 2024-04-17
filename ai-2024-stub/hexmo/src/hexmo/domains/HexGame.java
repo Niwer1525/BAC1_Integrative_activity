@@ -1,10 +1,11 @@
 package hexmo.domains;
 
+import java.util.Collection;
+
 import hexmo.domains.board.HexBoard;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.domains.player.HexPlayer;
-import hexmo.supervisors.commons.TileType;
 
 /**
  * Represent a game, contains the two players and the board.
@@ -48,7 +49,7 @@ public class HexGame {
      */
     public String[] getGameMessages() {
         String[] messages = new String[3];
-        TileType tileType = this.board.getActiveTile().getTileType();
+        HexColor tileType = this.board.getActiveTile().getColor();
 
         /* Write messages */
         messages[0] = String.format("%s (%s) vs %s (%s)",
@@ -59,10 +60,10 @@ public class HexGame {
         );
         messages[1] = String.format("Au tour de %s (%s)", this.turnPlayer.getName(), this.turnPlayer.getColor().getDisplayName());
         messages[2] = String.format("Case active (q: %d r: %d %d) %s", 
-            this.board.getActiveTile().getQ(), 
-            this.board.getActiveTile().getR(), 
-            0,
-            (tileType == TileType.RED ? "Rouge" : (tileType == TileType.BLUE ? "Bleu" : "Libre"))
+            this.board.getActiveTile().getQ(),
+            this.board.getActiveTile().getR(),
+            this.board.getActiveTile().getS(),
+            (tileType == HexColor.RED ? "Rouge" : (tileType == HexColor.BLUE ? "Bleu" : "Libre")) //TODO use display name of HexColor
         );
 
         return messages;
@@ -71,8 +72,8 @@ public class HexGame {
     private HexTile onPlayTile() {
         HexTile currentTile = this.board.getActiveTile();
         if(currentTile == null) return null;
-        if(currentTile.getTileType() == TileType.UNKNOWN) {
-            currentTile.setTileType(this.turnPlayer.getColorAsTileType());
+        if(currentTile.isEmpty()) {
+            currentTile.setColor(this.turnPlayer.getColor());
 
             /* Next turn */
             this.switchTurn();
@@ -80,22 +81,22 @@ public class HexGame {
         return currentTile;
     }
 
-    private TileType onFirstTurn(HexTile tile, TileType tileType, boolean wantSwap) {
-        if(!this.firstTurn || tile == null) return tileType == null ? TileType.UNKNOWN : tileType;
+    private HexColor onFirstTurn(HexTile tile, HexColor color, boolean wantSwap) {
+        if(!this.firstTurn || tile == null) return color == null ? HexColor.UNKNOWN : color;
 
         this.firstTurn = false; // Set the first turn to false
-        if(wantSwap && tileType != TileType.UNKNOWN) {
+        if(wantSwap && !tile.isEmpty()) {
             /* Save the color of the player for the tile type */
-            final TileType OPPOSITE_TILE_TYPE = this.getTurnPlayer().getColorAsTileType();
+            final HexColor PREVIOUS_COLOR = this.getTurnPlayer().getColor();
 
             /* Switch players colors */
             swapPlayers();
             
             /* Set the tile and return for visual use */
-            tile.setTileType(OPPOSITE_TILE_TYPE);
-            return OPPOSITE_TILE_TYPE;
+            tile.setColor(PREVIOUS_COLOR);
+            return PREVIOUS_COLOR;
         }
-        return tileType;
+        return color;
     }
 
     /**
@@ -104,17 +105,17 @@ public class HexGame {
      * @return The played tile
      */
     public HexTile play(boolean wantSwap) {
-        TileType tileType = this.turnPlayer.getColorAsTileType();
+        HexColor color = this.turnPlayer.getColor();
 		HexTile targetTile = this.onPlayTile();
 		if(targetTile == null) return null;
 
         /* If it's the first turn */
         if(this.firstTurn)
-            tileType = this.onFirstTurn(targetTile, tileType, wantSwap);
+            color = this.onFirstTurn(targetTile, color, wantSwap);
 
         /* Update the tile */
-        if(targetTile.getTileType() == TileType.UNKNOWN)
-            targetTile.setTileType(tileType);
+        if(targetTile.isEmpty())
+            targetTile.setColor(color);
 
         return targetTile;
     }
@@ -127,10 +128,27 @@ public class HexGame {
     }
 
     /**
-     * @return The board of the game
+     * Move the active tile to the given coordinates
+     * @param dx The x coordinate
+     * @param dy The y coordinate
+     * @return The target tile
      */
-    public HexBoard getBoard() {
-        return this.board;
+    public HexTile moveTo(int dx, int dy) {
+        return this.board.moveTo(dx, dy);
+    }
+
+    /**
+     * @return Get all tiles of the game
+     */
+    public Collection<HexTile> getTiles() {
+        return this.board.getTiles();
+    }
+
+    /**
+     * @return The active tile
+     */
+    public HexTile getActiveTile() {
+        return this.board.getActiveTile();
     }
 
     private void switchTurn() {

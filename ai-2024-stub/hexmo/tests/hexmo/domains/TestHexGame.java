@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import hexmo.domains.board.tiles.HexTile;
-import hexmo.supervisors.commons.TileType;
+import hexmo.domains.player.HexColor;
 
 public class TestHexGame {
 
@@ -21,7 +21,7 @@ public class TestHexGame {
     public void test_newGameR0_WithFirstPlayer() {
         HexGame game = new HexGame(0);
         assertEquals(1, // This should be 1 since there is at least the center tile
-            game.getBoard().getTilesCount()
+            game.getTiles().size()
         );
         assertNotNull(game.getTurnPlayer());
     }
@@ -30,11 +30,11 @@ public class TestHexGame {
     public void test_newGameRAlgo() {
         HexGame game = new HexGame(1);
         assertEquals(7,
-            game.getBoard().getTilesCount()
+            game.getTiles().size()
         );
         HexGame game2 = new HexGame(2);
         assertEquals(19,
-            game2.getBoard().getTilesCount()
+            game2.getTiles().size()
         );
     }
 
@@ -42,7 +42,7 @@ public class TestHexGame {
     public void test_newGameR3_WithFirstPlayer() {
         HexGame game = new HexGame(3);
         assertEquals(37,
-            game.getBoard().getTilesCount()
+            game.getTiles().size()
         );
         assertNotNull(game.getTurnPlayer());
     }
@@ -51,7 +51,7 @@ public class TestHexGame {
     public void test_newGameR4_WithFirstPlayer() {
         HexGame game = new HexGame(4);
         assertEquals(61,
-            game.getBoard().getTilesCount()
+            game.getTiles().size()
         );
         assertNotNull(game.getTurnPlayer());
     }
@@ -60,7 +60,7 @@ public class TestHexGame {
     public void test_newGameR5_WithFirstPlayer() {
         HexGame game = new HexGame(5);
         assertEquals(91,
-            game.getBoard().getTilesCount()
+            game.getTiles().size()
         );
         assertNotNull(game.getTurnPlayer());
     }
@@ -73,8 +73,8 @@ public class TestHexGame {
     public void test_activateTile_withoutSwap() {
         HexGame game = new HexGame(3);
         HexTile tile = game.play(false);
-        assertEquals(TileType.RED,
-            tile.getTileType()
+        assertEquals(HexColor.RED,
+            tile.getColor()
         );
     }
 
@@ -82,7 +82,7 @@ public class TestHexGame {
     public void test_activateTile_withSwap() {
         HexGame game = new HexGame(3);
         HexTile tile = game.play(true);
-        assertEquals(TileType.BLUE, tile.getTileType());
+        assertEquals(HexColor.BLUE, tile.getColor());
     }
 
     @Test
@@ -93,22 +93,22 @@ public class TestHexGame {
         tile = game.play(true);
         tile = game.play(false);
         tile = game.play(true);
-        assertEquals(TileType.BLUE, tile.getTileType());
+        assertEquals(HexColor.BLUE, tile.getColor());
     }
 
     @Test
     public void test_activateTile_Moved() {
         HexGame game = new HexGame(3);
-        game.getBoard().moveTo(255, 0);
+        game.moveTo(255, 0);
 
         /* 
          * This will should be 0 0 case since the "moveTo" 
          * should be unsuccessful...
         */
         HexTile tile = game.play(true);
-        assertEquals(0, game.getBoard().getActiveTile().getQ());
-        assertEquals(0, game.getBoard().getActiveTile().getR());
-        assertEquals(TileType.BLUE, tile.getTileType()); // Should be the defaut color
+        assertEquals(0, game.getActiveTile().getQ());
+        assertEquals(0, game.getActiveTile().getR());
+        assertEquals(HexColor.BLUE, tile.getColor()); // Should be the defaut color
     }
 
     @Test
@@ -116,7 +116,7 @@ public class TestHexGame {
         HexGame game = new HexGame(3);
         assertTrue(game.isFirstTurn());
         
-        game.getBoard().moveTo(0, 0);
+        game.moveTo(0, 0);
         assertTrue(game.isFirstTurn());
 
         game.play(true);
@@ -139,11 +139,11 @@ public class TestHexGame {
         }, game.getGameMessages());
 
         /* Move to [1, 0] */
-        game.getBoard().moveTo(1, 0);
+        game.moveTo(1, 0);
         assertArrayEquals(new String[] { 
             "P1 (rouge) vs P2 (bleu)",
             "Au tour de P1 (rouge)",
-            "Case active (q: 1 r: 0 0) Libre"
+            "Case active (q: 1 r: 0 -1) Libre"
         }, game.getGameMessages());
 
         /* Play and swap */
@@ -151,23 +151,23 @@ public class TestHexGame {
         assertArrayEquals(new String[] { 
             "P1 (bleu) vs P2 (rouge)",
             "Au tour de P2 (rouge)",
-            "Case active (q: 1 r: 0 0) Bleu"
+            "Case active (q: 1 r: 0 -1) Bleu"
         }, game.getGameMessages());
 
         /* Move to [2, 0] */
-        game.getBoard().moveTo(1, 0);
+        game.moveTo(1, 0);
         assertArrayEquals(new String[] { 
             "P1 (bleu) vs P2 (rouge)",
             "Au tour de P2 (rouge)",
-            "Case active (q: 2 r: 0 0) Libre"
+            "Case active (q: 2 r: 0 -2) Libre"
         }, game.getGameMessages());
 
         /* Play and swap (Swap shouldn't affect */
         game.play(true);
-        assertArrayEquals(new String[] { 
+        assertArrayEquals(new String[] {
             "P1 (bleu) vs P2 (rouge)",
             "Au tour de P1 (bleu)",
-            "Case active (q: 2 r: 0 0) Rouge"
+            "Case active (q: 2 r: 0 -2) Rouge"
         }, game.getGameMessages());
     }
 
