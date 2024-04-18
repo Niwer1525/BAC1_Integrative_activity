@@ -5,7 +5,7 @@ package hexmo.domains.player;
  * @see HexPlayer
  */
 public enum HexColor {
-    RED("rouge"), BLUE("bleu"), UNKNOWN("libre");
+    RED("rouge"), BLUE("bleu"), UNKNOWN("libre"), HIGHLIGHT("highlight");
 
     private final String displayName;
 

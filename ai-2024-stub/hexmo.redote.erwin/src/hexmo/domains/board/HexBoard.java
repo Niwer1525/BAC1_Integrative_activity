@@ -1,5 +1,6 @@
 package hexmo.domains.board;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class HexBoard {
     /**
      * @return All the tiles in this board
      */
-    public List<HexTile> getTiles() {
+    public Collection<HexTile> getTiles() {
         return List.copyOf(tiles.values());
     }
 
@@ -94,7 +95,14 @@ public class HexBoard {
         return String.format("HexBoard{tiles=%s, activeTile=%s}", tiles.size(), activeTile);
     }
     
-    private HexTile getTileAt(int q, int r) {
+    /**
+     * Get the tile at the given coordinates
+     * N.B : Null shouldn't happen, but it's better to handle it
+     * @param q
+     * @param r
+     * @return The tile at the given coordinates, or null if not found
+     */
+    public HexTile getTileAt(int q, int r) {
         return this.tiles.get(new AxialCoordinates(q, r));
     }
 }

@@ -4,10 +4,12 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 
@@ -72,7 +74,7 @@ public class TestHexGame {
     @Test
     public void test_activateTile_withoutSwap() {
         HexGame game = new HexGame(3);
-        HexTile tile = game.play(false);
+        HexTile tile = game.play();
         assertEquals(HexColor.RED,
             tile.getColor()
         );
@@ -89,11 +91,12 @@ public class TestHexGame {
     public void test_activateTile_withMultipleSwap() {
         HexGame game = new HexGame(3);
         HexTile tile = game.play(true);
-        tile = game.play(false);
-        tile = game.play(true);
-        tile = game.play(false);
-        tile = game.play(true);
         assertEquals(HexColor.BLUE, tile.getColor());
+        tile = game.play();
+        tile = game.play(true);
+        tile = game.play();
+        tile = game.play(true);
+        assertNull(tile);
     }
 
     @Test
@@ -178,5 +181,99 @@ public class TestHexGame {
         
         game.play(true);
         assertEquals("Game: P1 (bleu) vs P2 (rouge)", game.toString());
+    }
+
+    /* 
+     * Test playing
+     * */
+
+    @Test
+    public void test_moveToAndPlay() {
+        HexGame game = new HexGame(3);
+
+        // Move to [0, 2]
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        game.play(); // RED PLAYS AND BLUE REFUSE SWAP
+        assertEquals(new AxialCoordinates(0, 2), game.getActiveTile().getCoords());
+    
+        // Move to [-2, 0]
+        game.moveTo(-1, -1);
+        game.moveTo(-1, -1);
+        game.play(); // BLUE PLAYS
+        assertEquals(new AxialCoordinates(-2, 0), game.getActiveTile().getCoords());
+
+        // Move to [-2, 2]
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        game.play(); // RED PLAYS
+        assertEquals(new AxialCoordinates(-2, 2), game.getActiveTile().getCoords());
+    }
+
+    @Test
+    public void test_playColorsNoSwap() {
+        HexGame game = new HexGame(3);
+
+        // Move to [0, 2]
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        game.play(); // RED PLAYS AND BLUE REFUSE SWAP
+        
+        // Move to [-2, 0]
+        game.moveTo(-1, -1);
+        game.moveTo(-1, -1);
+        game.play(); // BLUE PLAYS
+        
+        // Move to [-2, 2]
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        game.play(); // RED PLAYS
+
+        assertEquals(HexColor.RED, game.getTileAt(0, 2).getColor());
+        assertEquals(HexColor.BLUE, game.getTileAt(-2, 0).getColor());
+        assertEquals(HexColor.RED, game.getTileAt(-2, 2).getColor());
+    }
+
+    @Test
+    public void test_playColorsSwap() {
+        HexGame game = new HexGame(3);
+
+        // Move to [-2, 0]
+        game.moveTo(-1, 0);
+        game.moveTo(-1, 0);
+        game.play(true); // RED PLAYS AND BLUE ACCEPT SWAP
+        
+        // Move to [-1, 0]
+        game.moveTo(1, 0);
+        game.play(); // BLUE PLAYS
+        
+        // Move to [-2, 2]
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        game.play(); // RED PLAYS
+
+        assertEquals(HexColor.RED, game.getTileAt(-2, 0).getColor());
+        assertEquals(HexColor.RED, game.getTileAt(-1, 2).getColor());
+        assertEquals(HexColor.BLUE, game.getTileAt(-1, 0).getColor());
+    }
+
+    @Test
+    public void test_errorMessageWhenTileAlreadyOccupied() {
+        HexGame game = new HexGame(3);
+
+        // Move to [-2, 0]
+        game.moveTo(-1, 0);
+        game.moveTo(-1, 0);
+        game.play(true); // RED PLAYS AND BLUE REFUSES SWAP
+
+        // Try to move to [-2, 0] again
+        game.moveTo(-1, 0);
+        game.moveTo(-1, 0);
+        game.play(); // BLUE PLAYS
+
+        assertEquals(HexColor.RED, game.getTileAt(-2, 0).getColor());
+        assertEquals(HexGame.TILE_ALREADY_CLAIMED, game.getGameMessages()[2]);
+        assertEquals(HexColor.UNKNOWN, game.getTileAt(0, 2).getColor());
+        assertEquals(HexColor.UNKNOWN, game.getTileAt(-2, 2).getColor());
     }
 }

@@ -8,16 +8,16 @@ import hexmo.domains.player.HexColor;
 public class HexTile {
 
     private final AxialCoordinates coords;
-    private HexColor type;
+    private HexColor color;
 
     /**
      * Create a new tile with the given coordinates and type
      * @param coords The coordinates of the tile
-     * @param type The type of the tile
+     * @param color The color of the tile
      */
-    public HexTile(AxialCoordinates coords, HexColor type) {
+    public HexTile(AxialCoordinates coords, HexColor color) {
         this.coords = coords;
-        this.type = type;
+        this.color = color;
     }
 
     /**
@@ -25,21 +25,21 @@ public class HexTile {
      * @param type The new tile type (Color)
      */
     public void setColor(HexColor type) {
-        this.type = type;
+        this.color = type;
     }
 
     /**
      * @return The current tile type (Color)
      */
     public HexColor getColor() {
-        return this.type;
+        return this.color;
     }
 
     /**
      * @return True if the tile is avalbile to be claimed
      */
     public boolean isEmpty() {
-        return this.type == HexColor.UNKNOWN;
+        return this.color == HexColor.UNKNOWN;
     }
 
     /**
@@ -72,6 +72,6 @@ public class HexTile {
 
     @Override
     public String toString() {
-        return String.format("Tile at [%s] with type %s", this.coords, this.type);
+        return String.format("Tile at [%s] with type %s", this.coords, this.color);
     }
 }

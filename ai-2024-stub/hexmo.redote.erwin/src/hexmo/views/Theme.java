@@ -1,10 +1,11 @@
 package hexmo.views;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.UIManager;
 
 import hexmo.supervisors.commons.TileType;
 
@@ -51,7 +52,8 @@ public final class Theme {
 	public static final Map<TileType, Color> TILES = Map.of(
 			TileType.UNKNOWN, UNKNOWN,
 			TileType.RED, RED,
-			TileType.BLUE, BLUE
+			TileType.BLUE, BLUE,
+			TileType.HIGHLIGHT, SECONDARY_COLOR
 	);
 	
 	/**

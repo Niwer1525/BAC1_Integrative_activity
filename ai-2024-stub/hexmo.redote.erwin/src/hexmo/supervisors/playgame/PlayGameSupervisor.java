@@ -71,13 +71,20 @@ public class PlayGameSupervisor {
 	 * <p>Ne fait rien si la case active a déjà été affectée.</p>
 	 * */
 	public void onSet() {
-		HexTile targetTile = this.gameFactory.getCurrentGame().play(
-			this.gameFactory.getCurrentGame().isFirstTurn() ? view.askQuestion(HexGame.FIRST_TURN_QUESTION) : false
-		);
+
+		/* Try to play */
+		HexTile targetTile = null;
+		if(this.gameFactory.getCurrentGame().isFirstTurn())
+			targetTile = this.gameFactory.getCurrentGame().play(view.askQuestion(HexGame.FIRST_TURN_QUESTION));
+		else 
+			targetTile = this.gameFactory.getCurrentGame().play();
+
+		/* Handle the played tile */
 		if(targetTile != null) {
 			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), this.asTileType(targetTile.getColor()));
 			this.updateViewMessages();
-		}
+		} else // If an error occured.
+			view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
 	}
 
 	/**

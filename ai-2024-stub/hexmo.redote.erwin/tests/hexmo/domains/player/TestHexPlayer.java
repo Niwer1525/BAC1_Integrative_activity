@@ -6,19 +6,22 @@ import org.junit.Test;
 
 public class TestHexPlayer {
 
+    private static final String PLAYER_1_NAME = "Charles";
+    private static final String PLAYER_2_NAME = "P3";
+
     @Test
     public void test_createPlayer() {
-        HexPlayer player = new HexPlayer("Charles", HexColor.BLUE);
+        HexPlayer player = new HexPlayer(PLAYER_1_NAME, HexColor.BLUE);
 
-        assertEquals("Charles", player.getName());
+        assertEquals(PLAYER_1_NAME, player.getName());
         assertEquals(HexColor.BLUE, player.getColor());
     }
 
     @Test
     public void test_setColor() {
-        HexPlayer player = new HexPlayer("Charles", HexColor.BLUE);
+        HexPlayer player = new HexPlayer(PLAYER_2_NAME, HexColor.BLUE);
 
-        assertEquals("Charles", player.getName());
+        assertEquals(PLAYER_2_NAME, player.getName());
         assertEquals(HexColor.BLUE, player.getColor());
 
         player.setColor(HexColor.RED);
@@ -30,7 +33,7 @@ public class TestHexPlayer {
 
     @Test
     public void test_toString() {
-        HexPlayer player = new HexPlayer("P3", HexColor.BLUE);
+        HexPlayer player = new HexPlayer(PLAYER_2_NAME, HexColor.BLUE);
 
         assertEquals("P3 (bleu)", player.toString());
     }
