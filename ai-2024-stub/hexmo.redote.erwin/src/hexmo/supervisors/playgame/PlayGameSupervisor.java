@@ -41,7 +41,6 @@ public class PlayGameSupervisor {
 	public void onEnter(ViewId fromView) {
 		if (ViewId.MAIN_MENU == fromView) {
 			view.clearTiles();
-			view.setTileAt(0, 0, TileType.UNKNOWN);
 			view.setActiveTile(0, 0);
 
 			for(HexTile tile : this.gameFactory.getCurrentGame().getTiles()) {
@@ -59,10 +58,8 @@ public class PlayGameSupervisor {
 	 * */
 	public void onMove(int dx, int dy) {
 		HexTile targetTile = this.gameFactory.getCurrentGame().moveTo(dx, dy);
-		if(targetTile != null) {
-			this.view.setActiveTile(targetTile.getCoords().asX(), targetTile.getCoords().asY());
-			this.updateViewMessages();
-		}
+		this.view.setActiveTile(targetTile.getCoords().asX(), targetTile.getCoords().asY());
+		this.updateViewMessages();
 	}
 
 	/**

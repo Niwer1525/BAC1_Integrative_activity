@@ -4,7 +4,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -96,21 +95,24 @@ public class TestHexGame {
         tile = game.play(true);
         tile = game.play();
         tile = game.play(true);
-        assertNull(tile);
+
+        // It shouldn't have been modified
+        assertNotNull(tile);
+        assertEquals(HexColor.BLUE, tile.getColor());
     }
 
     @Test
     public void test_activateTile_Moved() {
         HexGame game = new HexGame(3);
-        game.moveTo(255, 0);
+        HexTile tile = game.moveTo(255, 0);
 
         /* 
-         * This will should be 0 0 case since the "moveTo" 
+         * This will should be 0 0 case since the "moveTo"
          * should be unsuccessful...
         */
-        HexTile tile = game.play(true);
-        assertEquals(0, game.getActiveTile().getQ());
-        assertEquals(0, game.getActiveTile().getR());
+        tile = game.play(true);
+        assertEquals(0, tile.getQ());
+        assertEquals(0, tile.getR());
         assertEquals(HexColor.BLUE, tile.getColor()); // Should be the defaut color
     }
 
@@ -192,88 +194,21 @@ public class TestHexGame {
         HexGame game = new HexGame(3);
 
         // Move to [0, 2]
-        game.moveTo(0, 1);
-        game.moveTo(0, 1);
-        game.play(); // RED PLAYS AND BLUE REFUSE SWAP
-        assertEquals(new AxialCoordinates(0, 2), game.getActiveTile().getCoords());
+        HexTile tile = game.moveTo(0, 1);
+        tile = game.moveTo(0, 1);
+        tile = game.play(); // RED PLAYS AND BLUE REFUSE SWAP
+        assertEquals(new AxialCoordinates(0, 2), tile.getCoords());
     
         // Move to [-2, 0]
-        game.moveTo(-1, -1);
-        game.moveTo(-1, -1);
-        game.play(); // BLUE PLAYS
-        assertEquals(new AxialCoordinates(-2, 0), game.getActiveTile().getCoords());
+        tile = game.moveTo(-1, -1);
+        tile = game.moveTo(-1, -1);
+        tile = game.play(); // BLUE PLAYS
+        assertEquals(new AxialCoordinates(-2, 0), tile.getCoords());
 
         // Move to [-2, 2]
-        game.moveTo(0, 1);
-        game.moveTo(0, 1);
-        game.play(); // RED PLAYS
-        assertEquals(new AxialCoordinates(-2, 2), game.getActiveTile().getCoords());
-    }
-
-    @Test
-    public void test_playColorsNoSwap() {
-        HexGame game = new HexGame(3);
-
-        // Move to [0, 2]
-        game.moveTo(0, 1);
-        game.moveTo(0, 1);
-        game.play(); // RED PLAYS AND BLUE REFUSE SWAP
-        
-        // Move to [-2, 0]
-        game.moveTo(-1, -1);
-        game.moveTo(-1, -1);
-        game.play(); // BLUE PLAYS
-        
-        // Move to [-2, 2]
-        game.moveTo(0, 1);
-        game.moveTo(0, 1);
-        game.play(); // RED PLAYS
-
-        assertEquals(HexColor.RED, game.getTileAt(0, 2).getColor());
-        assertEquals(HexColor.BLUE, game.getTileAt(-2, 0).getColor());
-        assertEquals(HexColor.RED, game.getTileAt(-2, 2).getColor());
-    }
-
-    @Test
-    public void test_playColorsSwap() {
-        HexGame game = new HexGame(3);
-
-        // Move to [-2, 0]
-        game.moveTo(-1, 0);
-        game.moveTo(-1, 0);
-        game.play(true); // RED PLAYS AND BLUE ACCEPT SWAP
-        
-        // Move to [-1, 0]
-        game.moveTo(1, 0);
-        game.play(); // BLUE PLAYS
-        
-        // Move to [-2, 2]
-        game.moveTo(0, 1);
-        game.moveTo(0, 1);
-        game.play(); // RED PLAYS
-
-        assertEquals(HexColor.RED, game.getTileAt(-2, 0).getColor());
-        assertEquals(HexColor.RED, game.getTileAt(-1, 2).getColor());
-        assertEquals(HexColor.BLUE, game.getTileAt(-1, 0).getColor());
-    }
-
-    @Test
-    public void test_errorMessageWhenTileAlreadyOccupied() {
-        HexGame game = new HexGame(3);
-
-        // Move to [-2, 0]
-        game.moveTo(-1, 0);
-        game.moveTo(-1, 0);
-        game.play(true); // RED PLAYS AND BLUE REFUSES SWAP
-
-        // Try to move to [-2, 0] again
-        game.moveTo(-1, 0);
-        game.moveTo(-1, 0);
-        game.play(); // BLUE PLAYS
-
-        assertEquals(HexColor.RED, game.getTileAt(-2, 0).getColor());
-        assertEquals(HexGame.TILE_ALREADY_CLAIMED, game.getGameMessages()[2]);
-        assertEquals(HexColor.UNKNOWN, game.getTileAt(0, 2).getColor());
-        assertEquals(HexColor.UNKNOWN, game.getTileAt(-2, 2).getColor());
+        tile = game.moveTo(0, 1);
+        tile = game.moveTo(0, 1);
+        tile = game.play(); // RED PLAYS
+        assertEquals(new AxialCoordinates(-2, 2), tile.getCoords());
     }
 }

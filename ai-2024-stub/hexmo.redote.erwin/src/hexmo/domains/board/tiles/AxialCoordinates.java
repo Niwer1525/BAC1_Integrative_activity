@@ -59,7 +59,7 @@ public class AxialCoordinates {
 
     @Override
     public String toString() {
-        return String.format("q: %d r: %d", q, r);
+        return String.format("q: %d r: %d s: %d", q, r, s);
     }
 
     @Override

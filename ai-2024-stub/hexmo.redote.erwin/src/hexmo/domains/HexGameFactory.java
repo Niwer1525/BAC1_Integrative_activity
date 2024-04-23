@@ -4,7 +4,11 @@ public class HexGameFactory implements IHexGameFactory {
 
     private HexGame game;
 
+    /**
+     * @throws IllegalArgumentException boardSize in negative
+     */
     public void startNewGame(int boardSize) {
+        if (boardSize < 0) throw new IllegalArgumentException("Board size must be positive");
         this.game = new HexGame(boardSize);
     }
 

@@ -17,6 +17,7 @@ public class HexGame {
     private final HexBoard board;
     private final HexPlayer player1;
     private final HexPlayer player2;
+    private final int boardSize;
 
     private HexPlayer turnPlayer;
     private boolean firstTurn = true;
@@ -24,9 +25,12 @@ public class HexGame {
     /**
      * Create a new game with a board of size <code>boardSize</code>
      * @param boardSize The size of the board
+     * @throws IllegalArgumentException if boardSize is negative
      */
     public HexGame(int boardSize) {
+        if(boardSize < 0) throw new IllegalArgumentException("Board size must be positive");
         this.board = new HexBoard(boardSize);
+        this.boardSize = boardSize;
         
         // For testing purposes, the first player is the red one and the second player is the blue one
         this.player1 = new HexPlayer("P1", HexColor.RED);
@@ -45,8 +49,6 @@ public class HexGame {
     /**
      * Create the game messages according to the current game state
      * @return The game messages
-        //TODO : afficher les coordonnées axiale courante
-        //TODO : afficher les coordonnées axiales de la tuile active
      */
     public String[] getGameMessages() {
         String[] messages = new String[3];
@@ -70,35 +72,15 @@ public class HexGame {
         return messages;
     }
 
-    private HexTile onPlayTile() {
-        HexTile currentTile = this.board.getActiveTile();
-        if(currentTile == null || (!this.firstTurn && !currentTile.isEmpty() /* Check if the tile is already claimed*/)) 
-            return null;
-        if(currentTile.isEmpty()) {
-            currentTile.setColor(this.turnPlayer.getColor());
-
-            /* Next turn */
-            this.switchTurn();
-        }
-        return currentTile;
-    }
-
-    private HexColor onFirstTurn(HexTile tile, HexColor color, boolean wantSwap) {
-        if(!this.firstTurn || tile == null) return color == null ? HexColor.UNKNOWN : color;
-
+    private void onFirstTurn(HexTile tile, boolean wantSwap) {
         this.firstTurn = false; // Set the first turn to false
         if(wantSwap && !tile.isEmpty()) {
-            /* Save the color of the player for the tile type */
-            final HexColor PREVIOUS_COLOR = this.getTurnPlayer().getColor();
-
             /* Switch players colors */
-            swapPlayers();
-            
-            /* Set the tile and return for visual use */
-            tile.setColor(PREVIOUS_COLOR);
-            return PREVIOUS_COLOR;
+            player1.swapColorWith(player2);
+
+            /* Switch turn */
+            this.switchTurn();
         }
-        return color;
     }
 
     /**
@@ -112,18 +94,19 @@ public class HexGame {
     /**
      * Play the current active tile
      * @param wantSwap If the user want to swap
-     * @return The played tile or null if an error occurred
+     * @return The played tile
      */
     public HexTile play(boolean wantSwap) {
+        if(!canBeClaimed(this.board.getActiveTile()) || this.board.isActiveTileClaimed(firstTurn)) return this.board.getActiveTile();
         HexColor color = this.turnPlayer.getColor();
-		HexTile targetTile = this.onPlayTile();
-        if(targetTile == null)
-            return null;
+        HexTile targetTile = this.board.getActiveTile();
+		targetTile.setColor(this.turnPlayer.getColor());
+        this.switchTurn();
         
         /* If it's the first turn */
         if(this.firstTurn)
-            color = this.onFirstTurn(targetTile, color, wantSwap);
-
+            this.onFirstTurn(targetTile, wantSwap);
+        
         /* Update the tile */
         if(targetTile.isEmpty())
             targetTile.setColor(color);
@@ -154,38 +137,17 @@ public class HexGame {
     public Collection<HexTile> getTiles() {
         return this.board.getTiles();
     }
-
-    /**
-     * @return The active tile
-     */
-    public HexTile getActiveTile() {
-        return this.board.getActiveTile();
-    }
-
-    /**
-     * Get the tile at the given coordinates
-     * N.B : Null shouldn't happen, but it's better to handle it
-     * @param q
-     * @param r
-     * @return The tile at the given coordinates, or null if not found
-     */
-    public HexTile getTileAt(int q, int r) {
-        return this.board.getTileAt(q, r);
-
-    }
     
     private void switchTurn() {
         this.turnPlayer = this.turnPlayer == this.player1 ? this.player2 : this.player1;
     }
 
-    private void swapPlayers() {
-        HexColor temp = this.player1.getColor();
-        this.player1.setColor(this.player2.getColor());
-        this.player2.setColor(temp);
-    }
-
     @Override
     public String toString() {
         return String.format("Game: %s vs %s", this.player1, this.player2);
+    }
+
+    private boolean canBeClaimed(HexTile tile) {
+        return tile.isNotOnBorders(boardSize) || tile.contains(boardSize);
     }
 }

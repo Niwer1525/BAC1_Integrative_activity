@@ -1,8 +1,11 @@
 package hexmo.domains.board.tiles;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
+
+import hexmo.domains.HexGame;
 
 public class TestAxialCoordinates {
 
@@ -41,10 +44,11 @@ public class TestAxialCoordinates {
     public void test_equals() {
         assertEquals(new AxialCoordinates(0, 0), new AxialCoordinates(0, 0));
 
-        assertEquals(new AxialCoordinates(2, 2), new AxialCoordinates(2, 2));
+        assertNotEquals(new AxialCoordinates(2, 2), new AxialCoordinates(2, 1));
 
-        assertEquals(new AxialCoordinates(1, 1), new AxialCoordinates(1, 1));
+        assertNotEquals(new AxialCoordinates(1, 1), new HexGame(25));
 
-        assertEquals(new AxialCoordinates(3, 3), new AxialCoordinates(3, 3));
+        AxialCoordinates coords = new AxialCoordinates(3, 3);
+        assertEquals(coords, coords);
     }
 }

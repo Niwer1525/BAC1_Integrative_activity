@@ -1,5 +1,6 @@
 package hexmo.domains;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -34,5 +35,13 @@ public class TestHexGameFactory {
         factory.startNewGame(25);
         
         assertEquals("Game: P1 (rouge) vs P2 (bleu)", factory.getCurrentGame().toString());
+    }
+
+    @Test
+    public void test_getGame_gameCreatedWithUnder0Size() {
+        IHexGameFactory factory = new HexGameFactory();
+        assertThrows(IllegalArgumentException.class, () -> {
+            factory.startNewGame(-1);
+        });
     }
 }

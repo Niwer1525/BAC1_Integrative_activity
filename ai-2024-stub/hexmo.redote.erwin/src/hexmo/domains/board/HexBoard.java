@@ -1,8 +1,8 @@
 package hexmo.domains.board;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import hexmo.domains.board.tiles.AxialCoordinates;
@@ -44,8 +44,10 @@ public class HexBoard {
     /**
      * Create a new board with the given size
      * @param boardSize The size of the board
+     * @throws IllegalArgumentException if boardSize is negative
      */
     public HexBoard(int boardSize) {
+        if(boardSize < 0) throw new IllegalArgumentException("Board size must be positive");
         this.tiles = new HashMap<>();
 
         /* Adjusted loop limits for creating a hexagon */
@@ -54,9 +56,11 @@ public class HexBoard {
                 AxialCoordinates axialCoords = new AxialCoordinates(q, r);
                 HexTile tile = new HexTile(axialCoords, HexColor.UNKNOWN);
                 this.tiles.put(axialCoords, tile);
-                if(q == 0 && r == 0) this.activeTile = tile; // Set the active tile to the default one (0, 0)
             }
         }
+
+        /* Get the first active tile, wich is [0 0] */
+        this.activeTile = this.getTileAt(0, 0);
     }
 
     /**
@@ -66,28 +70,39 @@ public class HexBoard {
      * @return The target tile, Or null if outside the board dimensions
      */
     public HexTile moveTo(int dx, int dy) {
-        AxialCoordinates coords = AxialCoordinates.fromXYCoords(dx, dy);
-        HexTile tile = getTileAt(this.activeTile.getQ() + coords.getQ(), this.activeTile.getR() + coords.getR());
-        if(tile != null) {
-            this.activeTile = tile;
-            return tile;
-        }
-
-        return null;
+        AxialCoordinates coords = this.activeTile.add(AxialCoordinates.fromXYCoords(dx, dy));
+        HexTile tile = this.getTileAt(coords.getQ(), coords.getR());
+        if(tile == null) return this.activeTile;
+        
+        this.activeTile = tile;
+        return tile;
     }
 
     /**
-     * @return All the tiles in this board
+     * @return A copy of all the tiles in this board
      */
     public Collection<HexTile> getTiles() {
-        return List.copyOf(tiles.values());
+        Collection<HexTile> tiles = new ArrayList<>(this.tiles.size());
+        for (HexTile tile : this.tiles.values())
+            tiles.add(tile);
+        return tiles;
     }
 
     /**
-     * @return The active tile (Focused by the user)
+     * @return A copy of the active tile (Focused by the user)
      */
     public HexTile getActiveTile() {
-        return this.activeTile;
+        return new HexTile(this.activeTile.getCoords(), this.activeTile.getColor());
+    }
+
+    /**
+     * Check if the active tile is claimed or not.
+     * And it's check if this is the first turn and if the tile is not claimed, if so, then it return <code>False</code>. This allow swapping
+     * @param firstTurn If it's the first turn set to True, False otherwise
+     * @return True if the active tile is claimed, False otherwise
+     */
+    public boolean isActiveTileClaimed(boolean firstTurn) {
+        return this.activeTile == null || (!firstTurn && !this.activeTile.isEmpty());
     }
 
     @Override
@@ -102,7 +117,7 @@ public class HexBoard {
      * @param r
      * @return The tile at the given coordinates, or null if not found
      */
-    public HexTile getTileAt(int q, int r) {
+    public HexTile getTileAt(int q, int r) { //TODO Remove ? If not, then make a copy of tile
         return this.tiles.get(new AxialCoordinates(q, r));
     }
 }
