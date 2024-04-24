@@ -60,4 +60,17 @@ public class TestAxialCoordinates {
         assertEquals(1, coords2.getQ());
         assertEquals(1, coords2.getR());
     }
+
+    @Test
+    public void test_getDiagonals() {
+        AxialCoordinates coords = new AxialCoordinates(0, 0);
+        assertEquals(6, coords.getDiagonals().size());
+    }
+
+    @Test
+    public void test_getCommonNeighbors() {
+        AxialCoordinates coords = new AxialCoordinates(0, 0);
+        AxialCoordinates coords2 = new AxialCoordinates(1, 0);
+        assertEquals(2, coords.getCommonNeighborsWith(coords2).size());
+    }
 }

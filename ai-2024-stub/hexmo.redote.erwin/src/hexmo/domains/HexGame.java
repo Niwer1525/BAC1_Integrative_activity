@@ -160,10 +160,17 @@ public class HexGame {
     }
 
     /**
+     * @return The previous helper tiles (The tiles that were previously highlighted) wich is useful for clearing them
+     */
+    public Collection<HexTile> getPreviousHelperTiles() {
+        return this.board.getPreviousHelperTiles();
+    }
+
+    /**
      * Update the helper tiles
-     * @return The helper tiles
+     * @return The helper tiles for the next player
      */
     public Collection<HexTile> updateHelper() {
-        return this.board.updateHelper(this.turnPlayer.getColor());
+        return this.board.updateHelper(this.turnPlayer.getColor().getOpposite()); // Update for the next player
     }
 }

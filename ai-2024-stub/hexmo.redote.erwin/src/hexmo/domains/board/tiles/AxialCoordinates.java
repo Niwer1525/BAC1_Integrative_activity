@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.tngtech.archunit.thirdparty.com.google.common.collect.Sets;
+
 /**
  * Represent the coordinates of a tile in the axial system
  */
@@ -85,9 +87,8 @@ public class AxialCoordinates {
         return new AxialCoordinates(this.getQ() + coords.getQ(), this.getR() + coords.getR());
     }
     
-    //TODO
-    public Set<AxialCoordinates> getNeighbors() { // Sets ? Ensemblistes ?
-        return List.of(
+    private Set<AxialCoordinates> getNeighbors() {
+        return Sets.newHashSet(
             new AxialCoordinates(q + 1, r),
             new AxialCoordinates(q - 1, r),
             new AxialCoordinates(q, r + 1),
@@ -101,13 +102,15 @@ public class AxialCoordinates {
      * @return The common neighbors between this <code>AxialCoordinate</code> and the second <code>AxialCoordinate</code> 
      */
     public Collection<AxialCoordinates> getCommonNeighborsWith(AxialCoordinates coords) {
-        return null;
+        Set<AxialCoordinates> commonNeighbors = this.getNeighbors();
+        commonNeighbors.retainAll(coords.getNeighbors());
+        return commonNeighbors;
     }
-
+    
     /**
      * @return The diagonals of this tile
      */
-    public Set<AxialCoordinates> getDiagonals() {
+    public List<AxialCoordinates> getDiagonals() {
         return List.of(
             new AxialCoordinates(q + 1, r - 2),
             new AxialCoordinates(q + 2, r - 1),

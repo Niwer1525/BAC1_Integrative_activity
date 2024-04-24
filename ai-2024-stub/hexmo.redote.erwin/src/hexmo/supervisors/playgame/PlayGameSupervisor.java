@@ -1,5 +1,6 @@
 package hexmo.supervisors.playgame;
 
+import java.util.Collection;
 import java.util.Objects;
 
 import hexmo.domains.HexGame;
@@ -42,10 +43,8 @@ public class PlayGameSupervisor {
 		if (ViewId.MAIN_MENU == fromView) {
 			view.clearTiles();
 			view.setActiveTile(0, 0);
-
-			for(HexTile tile : this.gameFactory.getCurrentGame().getTiles()) {
-				view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), this.asTileType(tile.getColor()));
-			}
+			
+			updateTiles(this.gameFactory.getCurrentGame().getTiles(), null);
 			this.updateViewMessages();
 		}
 	}
@@ -86,9 +85,8 @@ public class PlayGameSupervisor {
 		} else // If an error occured.
 			view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
 
-		for(HexTile tile : this.gameFactory.getCurrentGame().updateHelper()) {
-			view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), TileType.HIGHLIGHT);
-		}
+		updateTiles(this.gameFactory.getCurrentGame().getPreviousHelperTiles(), TileType.UNKNOWN);
+		updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
 	}
 
 	/**
@@ -110,6 +108,12 @@ public class PlayGameSupervisor {
 			case RED: return TileType.RED;
 			case UNKNOWN: return TileType.UNKNOWN;
 			default: return TileType.UNKNOWN;
+		}
+	}
+
+	private void updateTiles(Collection<HexTile> tiles, TileType type) {
+		for(HexTile tile : tiles) {
+			this.view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), type == null ? asTileType(tile.getColor()) : type);
 		}
 	}
 }

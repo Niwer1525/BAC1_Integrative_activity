@@ -56,6 +56,7 @@ public class TestHexTile {
         AxialCoordinates coords = new AxialCoordinates(0, 1);
         HexTile tile = new HexTile(coords, HexColor.BLUE);
 
+        assertFalse(tile.contains(-2));
         assertTrue(tile.contains(0));
         assertTrue(tile.contains(1));
         assertTrue(tile.contains(-1));
@@ -72,10 +73,37 @@ public class TestHexTile {
 
     @Test
     public void test_isNotOnBorders() {
-        AxialCoordinates coords = new AxialCoordinates(0, 1);
-        HexTile tile = new HexTile(coords, HexColor.BLUE);
-
+        HexTile tile = new HexTile(new AxialCoordinates(0, 1), HexColor.BLUE);
         assertFalse(tile.isNotOnBorders(0));
         assertFalse(tile.isNotOnBorders(1));
+    }
+
+    @Test
+    public void test_isNotOnBordersQ() {
+        HexTile tile = new HexTile(new AxialCoordinates(0, 0), HexColor.BLUE);
+        assertFalse(tile.isNotOnBorders(0));
+        assertTrue(tile.isNotOnBorders(1));
+    }
+
+    @Test
+    public void testIsNotOnBorders_InsideBoard() {
+        // HexTile hexTile = new HexTile(1, 1, -2);
+
+        HexTile tile = new HexTile(new AxialCoordinates(1, 1), HexColor.BLUE);
+        assertFalse(tile.isNotOnBorders(2));
+    }
+    
+    @Test
+    public void testIsNotOnBorders_OnBorder() {
+        // HexTile hexTile = new HexTile(2, -2, 0);
+        HexTile tile = new HexTile(new AxialCoordinates(2, -2), HexColor.BLUE);
+        assertFalse(tile.isNotOnBorders(2));
+    }
+    
+    @Test
+    public void testIsNotOnBorders_OutsideBoard() {
+        // HexTile hexTile = new HexTile(3, 0, -3);
+        HexTile tile = new HexTile(new AxialCoordinates(3, 0), HexColor.BLUE);
+        assertTrue(tile.isNotOnBorders(2));
     }
 }

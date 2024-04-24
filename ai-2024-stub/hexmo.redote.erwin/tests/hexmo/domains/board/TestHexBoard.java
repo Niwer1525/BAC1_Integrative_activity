@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
 
+import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 
 public class TestHexBoard {
@@ -36,8 +37,8 @@ public class TestHexBoard {
         assertFalse(board.isActiveTileClaimed(false));
         assertFalse(board.isActiveTileClaimed(true));
 
-        board.moveTo(1, 0);
-        board.getTileAt(1, 0).setColor(HexColor.BLUE);
+        HexTile tile = board.moveTo(1, 0);
+        tile.setColor(HexColor.BLUE);
         assertTrue(board.isActiveTileClaimed(false));
         assertFalse(board.isActiveTileClaimed(true));
     }
