@@ -12,8 +12,9 @@ import hexmo.domains.player.HexPlayer;
  */
 public class HexGame {
 
-    public static final String FIRST_TURN_QUESTION = "Voulez vous changer la couleur de la case ?";
-    public static final String TILE_ALREADY_CLAIMED = "La tuile que vous avez sélectionnée est déjà prise !"; // Case déjà occupée
+    public static final String FIRST_TURN_QUESTION = "Voulez vous \"swapper\" ?";
+    public static final String TILE_ALREADY_CLAIMED = "Case déjà occupée";
+    public static final String TILE_INCOMPATIBLE_COLOR = "La case est incompatible avec votre couleur";
     private final HexBoard board;
     private final HexPlayer player1;
     private final HexPlayer player2;
@@ -97,7 +98,9 @@ public class HexGame {
      * @return The played tile
      */
     public HexTile play(boolean wantSwap) {
-        if(!canBeClaimed(this.board.getActiveTile()) || this.board.isActiveTileClaimed(firstTurn)) return this.board.getActiveTile();
+        if(!canBeClaimed(this.board.getActiveTile()) || this.board.isActiveTileClaimed(firstTurn))
+            return this.board.getActiveTile();
+
         HexColor color = this.turnPlayer.getColor();
         HexTile targetTile = this.board.getActiveTile();
 		targetTile.setColor(this.turnPlayer.getColor());
@@ -139,7 +142,7 @@ public class HexGame {
     }
     
     private void switchTurn() {
-        this.turnPlayer = this.turnPlayer == this.player1 ? this.player2 : this.player1;
+        this.turnPlayer = this.turnPlayer.equals(this.player1) ? this.player2 : this.player1;
     }
 
     @Override
@@ -147,7 +150,20 @@ public class HexGame {
         return String.format("Game: %s vs %s", this.player1, this.player2);
     }
 
-    private boolean canBeClaimed(HexTile tile) {
+    /**
+     * Check if the given tile can be claimed
+     * @param tile The tile to check
+     * @return True if the tile can be claimed, False otherwise
+     */
+    public boolean canBeClaimed(HexTile tile) {
         return tile.isNotOnBorders(boardSize) || tile.contains(boardSize);
+    }
+
+    /**
+     * Update the helper tiles
+     * @return The helper tiles
+     */
+    public Collection<HexTile> updateHelper() {
+        return this.board.updateHelper(this.turnPlayer.getColor());
     }
 }

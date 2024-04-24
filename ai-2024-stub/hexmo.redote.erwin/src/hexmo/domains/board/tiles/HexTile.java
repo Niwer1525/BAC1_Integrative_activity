@@ -39,6 +39,10 @@ public class HexTile {
         return this.color;
     }
 
+    public boolean hasColor(HexColor color) {
+        return this.color == color;
+    }
+
     /**
      * @return True if the tile is avalbile to be claimed
      */
@@ -97,16 +101,7 @@ public class HexTile {
         
         return a && b && c;
     }
-
-    /**
-     * Return the coordinates of the tile after adding the given coordinates
-     * @param coords The coordinates to add
-     * @return The new coordinates
-     */
-    public AxialCoordinates add(AxialCoordinates coords) {
-        return new AxialCoordinates(this.getQ() + coords.getQ(), this.getR() + coords.getR());
-    }
-
+    
     @Override
     public String toString() {
         return String.format("Tile at [%s] with type %s", this.coords, this.color);

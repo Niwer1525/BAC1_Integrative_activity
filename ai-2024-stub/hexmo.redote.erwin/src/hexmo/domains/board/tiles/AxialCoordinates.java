@@ -1,5 +1,9 @@
 package hexmo.domains.board.tiles;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Represent the coordinates of a tile in the axial system
  */
@@ -72,6 +76,54 @@ public class AxialCoordinates {
         return super.equals(obj) || (obj instanceof AxialCoordinates coords && coords.q == q && coords.r == r);
     }
 
+    /**
+     * Return the coordinates of the tile after adding the given coordinates
+     * @param coords The coordinates to add
+     * @return The new coordinates
+     */
+    public AxialCoordinates add(AxialCoordinates coords) {
+        return new AxialCoordinates(this.getQ() + coords.getQ(), this.getR() + coords.getR());
+    }
+    
+    //TODO
+    public Set<AxialCoordinates> getNeighbors() { // Sets ? Ensemblistes ?
+        return List.of(
+            new AxialCoordinates(q + 1, r),
+            new AxialCoordinates(q - 1, r),
+            new AxialCoordinates(q, r + 1),
+            new AxialCoordinates(q, r - 1),
+            new AxialCoordinates(q + 1, r - 1),
+            new AxialCoordinates(q - 1, r + 1)
+        );
+    }
+
+    /**
+     * @return The common neighbors between this <code>AxialCoordinate</code> and the second <code>AxialCoordinate</code> 
+     */
+    public Collection<AxialCoordinates> getCommonNeighborsWith(AxialCoordinates coords) {
+        return null;
+    }
+
+    /**
+     * @return The diagonals of this tile
+     */
+    public Set<AxialCoordinates> getDiagonals() {
+        return List.of(
+            new AxialCoordinates(q + 1, r - 2),
+            new AxialCoordinates(q + 2, r - 1),
+            new AxialCoordinates(q + 1, r + 1),
+            new AxialCoordinates(q - 1, r + 2),
+            new AxialCoordinates(q - 2, r + 1),
+            new AxialCoordinates(q - 1, r - 1)
+        );
+    }
+
+    /**
+     * Convert the display coords to the axial coords
+     * @param x The X value
+     * @param y The Y value
+     * @return The converted coordinates
+     */
     public static AxialCoordinates fromXYCoords(int x, int y) {
         int q = (int)(x / (Math.sqrt(3) / 2.0));
         int r = (int)(y / (3.0 / 2.0)) + y;

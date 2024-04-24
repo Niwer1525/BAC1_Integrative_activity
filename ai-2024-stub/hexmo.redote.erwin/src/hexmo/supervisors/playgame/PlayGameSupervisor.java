@@ -76,12 +76,19 @@ public class PlayGameSupervisor {
 		else 
 			targetTile = this.gameFactory.getCurrentGame().play();
 
+		if(!this.gameFactory.getCurrentGame().canBeClaimed(targetTile)) 
+			view.displayErrorMessage(HexGame.TILE_INCOMPATIBLE_COLOR);
+		
 		/* Handle the played tile */
 		if(targetTile != null) {
 			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), this.asTileType(targetTile.getColor()));
 			this.updateViewMessages();
 		} else // If an error occured.
 			view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
+
+		for(HexTile tile : this.gameFactory.getCurrentGame().updateHelper()) {
+			view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), TileType.HIGHLIGHT);
+		}
 	}
 
 	/**

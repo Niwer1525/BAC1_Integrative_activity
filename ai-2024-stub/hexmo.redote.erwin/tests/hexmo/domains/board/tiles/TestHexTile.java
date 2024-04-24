@@ -50,16 +50,6 @@ public class TestHexTile {
 
         assertEquals("Tile at [q: 0 r: 1 s: -1] with type blue", tile.toString());
     }
-    
-    @Test
-    public void test_add() {
-        AxialCoordinates coords = new AxialCoordinates(0, 1);
-        HexTile tile = new HexTile(coords, HexColor.BLUE);
-
-        AxialCoordinates coords2 = tile.add(new AxialCoordinates(1, 0));
-        assertEquals(1, coords2.getQ());
-        assertEquals(1, coords2.getR());
-    }
 
     @Test
     public void test_contains() {

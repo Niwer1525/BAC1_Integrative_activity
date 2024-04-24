@@ -51,4 +51,13 @@ public class TestAxialCoordinates {
         AxialCoordinates coords = new AxialCoordinates(3, 3);
         assertEquals(coords, coords);
     }
+   
+    @Test
+    public void test_add() {
+        AxialCoordinates coords = new AxialCoordinates(0, 1);
+
+        AxialCoordinates coords2 = coords.add(new AxialCoordinates(1, 0));
+        assertEquals(1, coords2.getQ());
+        assertEquals(1, coords2.getR());
+    }
 }

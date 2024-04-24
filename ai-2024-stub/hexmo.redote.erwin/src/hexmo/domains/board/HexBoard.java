@@ -39,7 +39,7 @@ import hexmo.domains.player.HexColor;
  */
 public class HexBoard {
     private final Map<AxialCoordinates, HexTile> tiles;
-    private HexTile activeTile = null;
+    private HexTile activeTile;
 
     /**
      * Create a new board with the given size
@@ -70,7 +70,7 @@ public class HexBoard {
      * @return The target tile, Or null if outside the board dimensions
      */
     public HexTile moveTo(int dx, int dy) {
-        AxialCoordinates coords = this.activeTile.add(AxialCoordinates.fromXYCoords(dx, dy));
+        AxialCoordinates coords = this.activeTile.getCoords().add(AxialCoordinates.fromXYCoords(dx, dy));
         HexTile tile = this.getTileAt(coords.getQ(), coords.getR());
         if(tile == null) return this.activeTile;
         
@@ -92,7 +92,7 @@ public class HexBoard {
      * @return A copy of the active tile (Focused by the user)
      */
     public HexTile getActiveTile() {
-        return new HexTile(this.activeTile.getCoords(), this.activeTile.getColor());
+        return this.activeTile;
     }
 
     /**
@@ -119,5 +119,35 @@ public class HexBoard {
      */
     public HexTile getTileAt(int q, int r) { //TODO Remove ? If not, then make a copy of tile
         return this.tiles.get(new AxialCoordinates(q, r));
+    }
+
+    /**
+     * Update the helper tiles
+     * @return The helper tiles
+     */
+    public Collection<HexTile> updateHelper(HexColor activePlayerColor) {
+        Collection<HexTile> helperTiles = new ArrayList<>();
+        AxialCoordinates currentTileCoords = this.activeTile.getCoords();
+        
+        /* Get 6 diagonals */
+        for(AxialCoordinates diagCoords : currentTileCoords.getDiagonals()) {
+            HexTile tile = this.getTileAt(diagCoords.getQ(), diagCoords.getR());
+            if(tile == null || !tile.hasColor(activePlayerColor)) continue;
+
+
+            /* Get common neighbors */
+            for(AxialCoordinates coords : currentTileCoords.getCommonNeighborsWith(diagCoords)) {
+
+            }
+
+            for(AxialCoordinates neighborCoordinate : diagCoords.getNeighbors()) {
+                for(AxialCoordinates neighborCoordinate2 : currentTileCoords.getNeighbors()) {
+                    if(!neighborCoordinate.equals(neighborCoordinate2)) continue;
+                    // helperTiles.add(this.getTileAt(neighborCoordinate.getQ(), neighborCoordinate.getR()));
+                }
+            }
+        }
+        
+        return helperTiles;
     }
 }
