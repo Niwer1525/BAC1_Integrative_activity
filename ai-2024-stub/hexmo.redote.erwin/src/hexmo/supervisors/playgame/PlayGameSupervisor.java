@@ -43,9 +43,7 @@ public class PlayGameSupervisor {
 		if (ViewId.MAIN_MENU == fromView) {
 			view.clearTiles();
 			view.setActiveTile(0, 0);
-			
-			updateTiles(this.gameFactory.getCurrentGame().getTiles(), null);
-			this.updateViewMessages();
+			this.drawBoard();
 		}
 	}
 
@@ -67,26 +65,27 @@ public class PlayGameSupervisor {
 	 * <p>Ne fait rien si la case active a déjà été affectée.</p>
 	 * */
 	public void onSet() {
-
 		/* Try to play */
-		HexTile targetTile = null;
-		if(this.gameFactory.getCurrentGame().isFirstTurn())
-			targetTile = this.gameFactory.getCurrentGame().play(view.askQuestion(HexGame.FIRST_TURN_QUESTION));
-		else 
-			targetTile = this.gameFactory.getCurrentGame().play();
+		boolean wantSwap = this.gameFactory.getCurrentGame().isFirstTurn() && view.askQuestion(HexGame.FIRST_TURN_QUESTION);
+		int playErrorCode = this.gameFactory.getCurrentGame().play(wantSwap);
 
-		if(!this.gameFactory.getCurrentGame().canBeClaimed(targetTile)) 
-			view.displayErrorMessage(HexGame.TILE_INCOMPATIBLE_COLOR);
-		
-		/* Handle the played tile */
-		if(targetTile != null) {
-			this.view.setTileAt(targetTile.getCoords().asX(), targetTile.getCoords().asY(), this.asTileType(targetTile.getColor()));
-			this.updateViewMessages();
-		} else // If an error occured.
-			view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
+		/* Handle played tile base on game error code */
+		handlePlay(playErrorCode);
+	}
 
-		updateTiles(this.gameFactory.getCurrentGame().getPreviousHelperTiles(), TileType.UNKNOWN);
-		updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
+	private void handlePlay(int playErrorCode) {
+		switch (playErrorCode) {
+			case HexGame.NO_PLAY_ERROR:
+				this.drawBoard();
+				break;
+			case HexGame.ERROR_TILE_NOT_VALID:
+				view.displayErrorMessage(HexGame.TILE_INCOMPATIBLE_COLOR);
+				break;
+			case HexGame.ERROR_TILE_CLAIMED:
+				view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
+				break;
+			default: break;
+		}
 	}
 
 	/**
@@ -98,10 +97,6 @@ public class PlayGameSupervisor {
 		view.goTo(ViewId.MAIN_MENU);
 	}
 
-	private void updateViewMessages() {
-		this.view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
-	}
-
 	private TileType asTileType(HexColor color) {
 		switch (color) {
 			case BLUE: return TileType.BLUE;
@@ -111,9 +106,23 @@ public class PlayGameSupervisor {
 		}
 	}
 
+	private void drawBoard() {
+		this.view.clearTiles(); // Clearing tiles. Improve perfs since the PlayGameView#setTileAt is adding a new Tile on top of each other...
+
+		/* Reset all tiles to there current color and then update the helper and display the helping tiles */
+		this.updateTiles(this.gameFactory.getCurrentGame().getTiles(), null);
+		this.updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
+
+		/* Update messages */
+		this.updateViewMessages();
+	}
+
+	private void updateViewMessages() {
+		this.view.setActionMessages(this.gameFactory.getCurrentGame().getGameMessages());
+	}
+
 	private void updateTiles(Collection<HexTile> tiles, TileType type) {
-		for(HexTile tile : tiles) {
+		for(HexTile tile : tiles)
 			this.view.setTileAt(tile.getCoords().asX(), tile.getCoords().asY(), type == null ? asTileType(tile.getColor()) : type);
-		}
 	}
 }

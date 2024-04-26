@@ -15,6 +15,11 @@ public class HexGame {
     public static final String FIRST_TURN_QUESTION = "Voulez vous \"swapper\" ?";
     public static final String TILE_ALREADY_CLAIMED = "Case déjà occupée";
     public static final String TILE_INCOMPATIBLE_COLOR = "La case est incompatible avec votre couleur";
+
+    public static final int NO_PLAY_ERROR = 0;
+    public static final int ERROR_TILE_NOT_VALID = 1;
+    public static final int ERROR_TILE_CLAIMED = 2;
+
     private final HexBoard board;
     private final HexPlayer player1;
     private final HexPlayer player2;
@@ -75,7 +80,7 @@ public class HexGame {
 
     private void onFirstTurn(HexTile tile, boolean wantSwap) {
         this.firstTurn = false; // Set the first turn to false
-        if(wantSwap && !tile.isEmpty()) {
+        if(wantSwap) {
             /* Switch players colors */
             player1.swapColorWith(player2);
 
@@ -85,23 +90,17 @@ public class HexGame {
     }
 
     /**
-     * Play the current active tile (without swapping)
-     * @return The played tile or null if an error occurred
-     */
-    public HexTile play() {
-        return this.play(false);
-    }
-
-    /**
-     * Play the current active tile
+     * Play the current active tile. This can affect the <code>playErrorCode</code>.
      * @param wantSwap If the user want to swap
-     * @return The played tile
+     * @return The error code
+     * @see HexGame#NO_PLAY_ERROR
+     * @see HexGame#ERROR_TILE_NOT_VALID
+     * @see HexGame#ERROR_TILE_CLAIMED
      */
-    public HexTile play(boolean wantSwap) {
-        if(!canBeClaimed(this.board.getActiveTile()) || this.board.isActiveTileClaimed(firstTurn))
-            return this.board.getActiveTile();
+    public int play(boolean wantSwap) { //TODO
+        if(!this.canBeClaimed(this.board.getActiveTile())) return ERROR_TILE_NOT_VALID;
+        if(this.board.isActiveTileClaimed(firstTurn)) return ERROR_TILE_CLAIMED;
 
-        HexColor color = this.turnPlayer.getColor();
         HexTile targetTile = this.board.getActiveTile();
 		targetTile.setColor(this.turnPlayer.getColor());
         this.switchTurn();
@@ -109,14 +108,10 @@ public class HexGame {
         /* If it's the first turn */
         if(this.firstTurn)
             this.onFirstTurn(targetTile, wantSwap);
-        
-        /* Update the tile */
-        if(targetTile.isEmpty())
-            targetTile.setColor(color);
 
-        return targetTile;
+        return NO_PLAY_ERROR;
     }
-
+    
     /**
      * @return true if it's the first turn of the game
      */
@@ -150,27 +145,15 @@ public class HexGame {
         return String.format("Game: %s vs %s", this.player1, this.player2);
     }
 
-    /**
-     * Check if the given tile can be claimed
-     * @param tile The tile to check
-     * @return True if the tile can be claimed, False otherwise
-     */
-    public boolean canBeClaimed(HexTile tile) {
-        return tile.isNotOnBorders(boardSize) || tile.contains(boardSize);
+    private boolean canBeClaimed(HexTile tile) {
+        return tile.isNotOnBorders(boardSize) || tile.contains(this.turnPlayer.getColor() == HexColor.RED ? boardSize : -boardSize);
     }
-
-    /**
-     * @return The previous helper tiles (The tiles that were previously highlighted) wich is useful for clearing them
-     */
-    public Collection<HexTile> getPreviousHelperTiles() {
-        return this.board.getPreviousHelperTiles();
-    }
-
+    
     /**
      * Update the helper tiles
-     * @return The helper tiles for the next player
+     * @return The helper tiles for the current turn player
      */
     public Collection<HexTile> updateHelper() {
-        return this.board.updateHelper(this.turnPlayer.getColor().getOpposite()); // Update for the next player
+        return this.board.updateHelper(this.turnPlayer.getColor());
     }
 }

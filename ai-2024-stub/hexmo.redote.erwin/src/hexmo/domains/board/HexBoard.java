@@ -3,7 +3,6 @@ package hexmo.domains.board;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import hexmo.domains.board.tiles.AxialCoordinates;
@@ -40,7 +39,6 @@ import hexmo.domains.player.HexColor;
  */
 public class HexBoard {
     private final Map<AxialCoordinates, HexTile> tiles;
-    private final List<HexTile> previousHelperTiles;
     private HexTile activeTile;
 
     /**
@@ -51,7 +49,6 @@ public class HexBoard {
     public HexBoard(int boardSize) {
         if(boardSize < 0) throw new IllegalArgumentException("Board size must be positive");
         this.tiles = new HashMap<>();
-        this.previousHelperTiles = new ArrayList<>();
 
         /* Adjusted loop limits for creating a hexagon */
         for (int q = -boardSize; q <= boardSize; q++) {
@@ -114,47 +111,44 @@ public class HexBoard {
     }
 
     /**
-     * @return The previous helper tiles (The tiles that were previously highlighted) wich is useful for clearing them
-     */
-    public Collection<HexTile> getPreviousHelperTiles() {
-        Collection<HexTile> tiles = new ArrayList<>(this.previousHelperTiles.size());
-        for (HexTile tile : this.previousHelperTiles)
-            tiles.add(tile);
-        return tiles;
-    }
-
-    /**
-     * Update the helper tiles
+     * Update the helper tiles from the center of the board [0, 0]
      * @return The helper tiles
      */
     public Collection<HexTile> updateHelper(HexColor activePlayerColor) {
-        Collection<HexTile> tiles = this.updateHelper(activePlayerColor, this.activeTile.getCoords());
-        this.previousHelperTiles.clear(); // Clear the previous helper tiles
-        this.previousHelperTiles.addAll(tiles); // Add the new helper tiles
-        return tiles;
+        return this.updateHelper(activePlayerColor, new AxialCoordinates(0, 0), null);
     }
     
-    private Collection<HexTile> updateHelper(HexColor activePlayerColor, AxialCoordinates centerCoords) {
+    //TODO
+    private Collection<HexTile> updateHelper(HexColor activePlayerColor, AxialCoordinates centerCoords, AxialCoordinates previousCoordinates) {
         Collection<HexTile> helperTiles = new ArrayList<>();
 
         /* Get 6 diagonals */
         for(AxialCoordinates diagCoords : centerCoords.getDiagonals()) {
+            if(diagCoords.equals(previousCoordinates)) continue; // Prevent from doing the calculations again
+
+            /* Get the tile at the diagonal coords */
             HexTile diagTile = this.getTileAt(diagCoords.getQ(), diagCoords.getR());
-            if(diagTile == null || !diagTile.hasColor(activePlayerColor)) continue;
+            if(diagTile == null || !diagTile.hasColor(activePlayerColor)) 
+                continue; // Prevent from continuing if the tile is not the same color as the player or if the tile is null
 
             /* Get common neighbors */
-            for(AxialCoordinates neighborCoords : centerCoords.getCommonNeighborsWith(diagCoords)) {
-                HexTile helperTile = this.getTileAt(neighborCoords.getQ(), neighborCoords.getR());
-                if(helperTile == null || !helperTile.isEmpty()) break; // If one or more neighbors are not empty, then we don't need to check the others
-                helperTiles.add(helperTile);
+            if(this.getTileAt(centerCoords.getQ(), centerCoords.getR()).hasColor(activePlayerColor)) {
+                for(AxialCoordinates neighborCoords : centerCoords.getCommonNeighborsWith(diagCoords)) {
+                    HexTile helperTile = this.getTileAt(neighborCoords.getQ(), neighborCoords.getR());
+                    if(helperTile == null || !helperTile.isEmpty()) 
+                        break; // If one or more neighbors are not empty, then we don't need to check the others
+                    helperTiles.add(helperTile);
+                }
             }
-
+            
             /* Continue in diagonal until we reach the border */
-            // Collection<HexTile> x = this.updateHelper(activePlayerColor, diagCoords);
-            // System.out.println(x);
-            // helperTiles.addAll(x);
+            helperTiles.addAll(this.updateHelper(activePlayerColor, diagCoords, centerCoords));
         }
         return helperTiles;
+    }
+
+    private void x() {
+
     }
 
     private HexTile getTileAt(int q, int r) {

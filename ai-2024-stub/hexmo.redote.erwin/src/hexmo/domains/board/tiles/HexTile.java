@@ -4,11 +4,31 @@ import hexmo.domains.player.HexColor;
 
 /**
  * Represent a tile on the board
+ * 
+ * It-2-q2 : Pour commencer, la case doit être au bord du plateau, ensuite on pourra vérifier si la case correspond à une case de 
+ * son joueur ou d'un coin.
+ * 
+ * Etape 1 :
+ *  Il faut vérifier le bord. Pour se faire il suffit de vérifier qu'aucune des composantes de la tuile n'est supérieur à la taille du plateau
+ *  ou n'est inférieur à la taille négative du plateau.
+ *  Exemple pour un plateau de rayon 3 et une tuile de composante [q: 3 r: -1 s: 1] TODO
+ *
+ * Etape 2 :
+ *  Il faut s'assurer que le joueur n'est pas devant les cases (Qui ne sont pas des coins) du joueur opposé.
+ *  Pour cela il suffit de vérifier si au moins l'une des compoantes (Q, R, S) est EGAL à la taille du plateau
+ *  Exemple pour un plateau de rayon 3 et une tuile de composante [q: r: s: ] TODO
+ *  
+ *  @see HexTile#isNotOnBorders(int)
  */
 public class HexTile {
 
     private final AxialCoordinates coords;
     private HexColor color;
+
+    public HexTile(HexTile original) {
+        this.coords = original.coords;
+        this.color = original.color;
+    }
 
     /**
      * Create a new tile with the given coordinates and type
