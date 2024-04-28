@@ -185,6 +185,11 @@ public class TestHexGame {
         assertEquals(HexGame.NO_PLAY_ERROR, errorCode);
 
         /* Play again at the same pos, should say that an error occured */
+        game.moveTo(1, 0);
+        errorCode = game.play(false);
+        assertEquals(HexGame.NO_PLAY_ERROR, errorCode);
+
+        game.moveTo(-1, 0);
         errorCode = game.play(false);
         assertEquals(HexGame.ERROR_TILE_CLAIMED, errorCode);
     }
@@ -193,16 +198,14 @@ public class TestHexGame {
     public void test_moveToAndPlay_ErrorsTileNotValid_cornersAndBorders() {
         HexGame game = new HexGame(3);
 
-        /* Move to red border */
+        /* Move to blue border */
         game.moveTo(1, 0);
         game.moveTo(1, 1);
         int errorCode = game.play(false);
         assertEquals(HexGame.ERROR_TILE_NOT_VALID, errorCode);
 
         /* Move to a corner */
-        game.moveTo(1, 0);
-        game.moveTo(1, 0);
-        game.moveTo(1, 1);
+        game.moveTo(1, -1);
         errorCode = game.play(false);
         assertEquals(HexGame.NO_PLAY_ERROR, errorCode);
     }

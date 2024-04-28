@@ -78,7 +78,7 @@ public class HexGame {
         return messages;
     }
 
-    private void onFirstTurn(HexTile tile, boolean wantSwap) {
+    private void onFirstTurn(boolean wantSwap) {
         this.firstTurn = false; // Set the first turn to false
         if(wantSwap) {
             /* Switch players colors */
@@ -97,17 +97,19 @@ public class HexGame {
      * @see HexGame#ERROR_TILE_NOT_VALID
      * @see HexGame#ERROR_TILE_CLAIMED
      */
-    public int play(boolean wantSwap) { //TODO
+    public int play(boolean wantSwap) {
         if(!this.canBeClaimed(this.board.getActiveTile())) return ERROR_TILE_NOT_VALID;
         if(this.board.isActiveTileClaimed(firstTurn)) return ERROR_TILE_CLAIMED;
 
-        HexTile targetTile = this.board.getActiveTile();
-		targetTile.setColor(this.turnPlayer.getColor());
+        /* Update the color of the tile */
+		this.board.getActiveTile().setColor(this.turnPlayer.getColor());
+
+        /* Switch turn */
         this.switchTurn();
         
         /* If it's the first turn */
         if(this.firstTurn)
-            this.onFirstTurn(targetTile, wantSwap);
+            this.onFirstTurn(wantSwap);
 
         return NO_PLAY_ERROR;
     }

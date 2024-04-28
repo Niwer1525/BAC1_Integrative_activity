@@ -1,8 +1,10 @@
 package hexmo.domains.board;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import hexmo.domains.board.tiles.AxialCoordinates;
@@ -34,8 +36,27 @@ import hexmo.domains.player.HexColor;
  * De plus la map permet d'éviter le parcours de la liste pour retrouver une tuile, ce qui est plus efficace
  * N.B : Le choix de la HashMap est plus approprié qu'un TreeMap car je n'ai pas besoin de trier les tuiles
  * 
- * It-1-q3 : Composante "S"
- *  Inexistante ?
+ * It-1-q3 : Composante "S" correspond à : -q - r
+ *  Car la somme des trois composantes doit être égale à 0, donc S = -q - r
+ *  Exemple : [q: 1 r: 2 s: -3] => 1 + 2 + (-3) = 0
+ *  Exemple : [q: 0 r: 0 s: 0] => 0 + 0 + 0 = 0
+ * 
+ * It-2-q1 : Conditions de cases formant un pont
+ *  Les 4 cases formant un pont doivent chacune respecter des contitions (N.B : Evidemment les cases doivent respecter les conditions de base, c-à-d être sur le plateau):
+ *    La case en diagonale de celle que l'on veut vérifier doit être de la même couleur
+ *    Les deux cases voisines qui sont communes aux cases diagonale doivent être de la même vide (Ni bleu, ni rouge)
+ * 
+ * It-3-q3 : Choix collection (interface + implémentation) pour les cases voisines
+ *  J'ai choisi d'utiliser un set pour stocker les cases voisines car je n'ai pas besoin de clé-valeur (Map), et je n'ai pas besoin de trier les cases (TreeSet)
+ *  Je n'ai pas non plus besoin de l'ordre d'insertion (Queue), j'ai cependant besoin d'une contrainte d'unicité pour éviter de me retrouver avec plusieurs fois la même tuile
+ *  donc le choix le plus adapté est le Set.
+ * 
+ *  Quand à l'implémentation, j'ai choisi HashSet car il est plus rapide que le TreeSet, et je n'ai pas besoin de trier les cases
+ *   Les CTT des fonctions que j'utilises :
+ *      add() : O(1) Il s'agit d'une map dans laquel l'on "put" un élément
+ *      addAll() : O(n) Il s'agit d'une map dans laquel l'on "put" plusieurs éléments
+ *      retainAll() : O(n) Il effectue une boucle sur ses propres éléments pour vérifier si ils sont contenus dans l'autre collection
+ *  @see AbstractCollection#retainAll
  */
 public class HexBoard {
     private final Map<AxialCoordinates, HexTile> tiles;
@@ -118,40 +139,45 @@ public class HexBoard {
         return this.updateHelper(activePlayerColor, new AxialCoordinates(0, 0), null);
     }
     
-    //TODO
+    /*
+     * Il s'agit alors d'un O(n) ou n correspond au nombre de cases qui seront retournées par la récursion de cette fonction.
+     */
     private Collection<HexTile> updateHelper(HexColor activePlayerColor, AxialCoordinates centerCoords, AxialCoordinates previousCoordinates) {
-        Collection<HexTile> helperTiles = new ArrayList<>();
+        Collection<HexTile> helperTiles = new HashSet<>();
 
         /* Get 6 diagonals */
-        for(AxialCoordinates diagCoords : centerCoords.getDiagonals()) {
-            if(diagCoords.equals(previousCoordinates)) continue; // Prevent from doing the calculations again
-
-            /* Get the tile at the diagonal coords */
-            HexTile diagTile = this.getTileAt(diagCoords.getQ(), diagCoords.getR());
-            if(diagTile == null || !diagTile.hasColor(activePlayerColor)) 
+        for(AxialCoordinates diagCoords : centerCoords.getDiagonals()) { // O(1), 6 iterations
+            if(diagCoords.equals(previousCoordinates))
+                continue; // Prevent from doing the calculations again
+            if(!tileExistAndIsUseable(diagCoords, activePlayerColor))
                 continue; // Prevent from continuing if the tile is not the same color as the player or if the tile is null
 
             /* Get common neighbors */
-            if(this.getTileAt(centerCoords.getQ(), centerCoords.getR()).hasColor(activePlayerColor)) {
-                for(AxialCoordinates neighborCoords : centerCoords.getCommonNeighborsWith(diagCoords)) {
-                    HexTile helperTile = this.getTileAt(neighborCoords.getQ(), neighborCoords.getR());
-                    if(helperTile == null || !helperTile.isEmpty()) 
-                        break; // If one or more neighbors are not empty, then we don't need to check the others
-                    helperTiles.add(helperTile);
-                }
-            }
+            handleNeighbors(centerCoords, diagCoords, activePlayerColor, helperTiles);
             
             /* Continue in diagonal until we reach the border */
-            helperTiles.addAll(this.updateHelper(activePlayerColor, diagCoords, centerCoords));
+            helperTiles.addAll(this.updateHelper(activePlayerColor, diagCoords, centerCoords)); // O(n) ou n correspond au nombre qui sera retourné par la récurssion de cette fonction.
         }
         return helperTiles;
     }
 
-    private void x() {
-
+    private boolean tileExistAndIsUseable(AxialCoordinates coords, HexColor color) { // O(1)
+        HexTile tile = this.getTileAt(coords.getQ(), coords.getR());
+        return tile != null && tile.hasColor(color);
     }
 
-    private HexTile getTileAt(int q, int r) {
+    private void handleNeighbors(AxialCoordinates centerCoords, AxialCoordinates coords, HexColor activePlayerColor, Collection<HexTile> helperTiles) {
+        if(!tileExistAndIsUseable(centerCoords, activePlayerColor)) return;
+
+        for(AxialCoordinates neighborCoords : centerCoords.getCommonNeighborsWith(coords)) { // O(1) car 6 itérations pour les voisins et donc les voisins commun resetera à 6 car retailAll() est en O(n) et n=6
+            HexTile neighborTile = this.getTileAt(neighborCoords.getQ(), neighborCoords.getR());
+            if(neighborTile == null || !neighborTile.isEmpty()) 
+                break; // If one or more neighbors are not empty, then we don't need to check the others
+            helperTiles.add(neighborTile); // O(1)
+        }
+    }
+
+    private HexTile getTileAt(int q, int r) { // O(1)
         return this.tiles.get(new AxialCoordinates(q, r));
     }
 }

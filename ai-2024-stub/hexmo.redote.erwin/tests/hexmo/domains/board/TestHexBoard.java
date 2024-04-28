@@ -42,4 +42,76 @@ public class TestHexBoard {
         assertTrue(board.isActiveTileClaimed(false));
         assertFalse(board.isActiveTileClaimed(true));
     }
+
+    @Test
+    public void test_updateHelper_playerRedTwoBridges() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(0, 0).setColor(HexColor.RED);
+        board.moveTo(-1, -1).setColor(HexColor.RED);
+        board.moveTo(1, -1);
+        board.moveTo(0, -1).setColor(HexColor.RED);
+        assertEquals(4, board.updateHelper(HexColor.RED).size());
+    }
+
+    /* @Test
+    public void test_updateHelper_playerBlueTwoBridges() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(-1,1);
+        board.moveTo(0, 1).setColor(HexColor.BLUE);
+        board.moveTo(1, 0);
+        board.moveTo(0, -1);
+        board.moveTo(1, 0).setColor(HexColor.BLUE);
+        board.moveTo(-1, 0);
+        board.moveTo(-1, 0);
+        board.moveTo(-1, 0).setColor(HexColor.BLUE);
+        assertEquals(4, board.updateHelper(HexColor.BLUE).size());
+    } */
+
+    @Test
+    public void test_updateHelper_playerRedOneBridges() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(0, 0).setColor(HexColor.RED);
+        board.moveTo(-1, -1).setColor(HexColor.RED);
+        board.moveTo(1, -1);
+        board.moveTo(0, -1).setColor(HexColor.RED);
+        board.moveTo(0, 1);
+        board.moveTo(0, 1).setColor(HexColor.RED);
+        assertEquals(2, board.updateHelper(HexColor.RED).size());
+    }
+
+    /* @Test
+    public void test_updateHelper_playerBlueOneBridges() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(-1,1);
+        board.moveTo(0, 1).setColor(HexColor.BLUE);
+        board.moveTo(1, 0).setColor(HexColor.BLUE);
+        board.moveTo(0, -1);
+        board.moveTo(1, 0).setColor(HexColor.BLUE);
+        board.moveTo(-1, 0);
+        board.moveTo(-1, 0);
+        board.moveTo(-1, 0).setColor(HexColor.BLUE);
+        assertEquals(2, board.updateHelper(HexColor.BLUE).size());
+    } */
+
+    @Test
+    public void test_updateHelper_playerRedOutsideBounds() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(0, 0).setColor(HexColor.RED);
+        board.moveTo(-1, -1).setColor(HexColor.RED);
+        board.moveTo(1, -1);
+        board.moveTo(0, -1).setColor(HexColor.RED);
+        board.moveTo(0, -1).setColor(HexColor.RED); // Outside bounds
+        assertEquals(4, board.updateHelper(HexColor.RED).size());
+    }
+
+    @Test
+    public void test_updateHelper_playerRedBorders() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(1, 0);
+        board.moveTo(1, 0);
+        board.moveTo(1, 0).setColor(HexColor.RED);
+        board.moveTo(-1, 0);
+        board.moveTo(-1, 1).setColor(HexColor.RED);
+        assertEquals(2, board.updateHelper(HexColor.RED).size());
+    }
 }
