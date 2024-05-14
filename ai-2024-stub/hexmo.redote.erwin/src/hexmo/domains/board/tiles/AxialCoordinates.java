@@ -87,7 +87,10 @@ public class AxialCoordinates {
         return new AxialCoordinates(this.getQ() + coords.getQ(), this.getR() + coords.getR());
     }
     
-    private Set<AxialCoordinates> getNeighbors() {
+    /**
+     * @return The neighbors of this tile
+     */
+    public Set<AxialCoordinates> getNeighbors() {
         return Sets.newHashSet(
             new AxialCoordinates(q + 1, r),
             new AxialCoordinates(q - 1, r),

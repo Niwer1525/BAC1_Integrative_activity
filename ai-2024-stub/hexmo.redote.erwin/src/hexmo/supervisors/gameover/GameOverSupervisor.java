@@ -34,7 +34,7 @@ public class GameOverSupervisor {
 	 * */
 	public void onEnter(ViewId fromView) {
 		//TODO : générer les résultats et les afficher.
-		this.view.setStats("GAME OVER: true","Very trye");
+		this.view.setStats("Le vinqueur est ","P1 (Rouge)");
 	}
 
 	/**

@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 
 import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
@@ -169,14 +172,66 @@ public class HexBoard {
     private void handleNeighbors(AxialCoordinates centerCoords, AxialCoordinates coords, HexColor activePlayerColor, Collection<HexTile> helperTiles) {
         if(!tileExistAndIsUseable(centerCoords, activePlayerColor)) return;
 
+        Collection<HexTile> commonNeighbors = new HashSet<>(2);
         for(AxialCoordinates neighborCoords : centerCoords.getCommonNeighborsWith(coords)) { // O(1) car 6 itérations pour les voisins et donc les voisins commun resetera à 6 car retailAll() est en O(n) et n=6
             HexTile neighborTile = this.getTileAt(neighborCoords.getQ(), neighborCoords.getR());
-            if(neighborTile == null || !neighborTile.isEmpty()) 
+            if(neighborTile == null || !neighborTile.isEmpty()) {
+                commonNeighbors.clear();
                 break; // If one or more neighbors are not empty, then we don't need to check the others
-            helperTiles.add(neighborTile); // O(1)
+            }
+
+            commonNeighbors.add(neighborTile); // O(1)
         }
+        helperTiles.addAll(commonNeighbors); // O(1)
     }
 
+    private Map<AxialCoordinates, HexTile> getTilesCoordinatesByColor(HexColor color) {
+        Map<AxialCoordinates, HexTile> coloredTiles = new HashMap<>();
+
+        for(Entry<AxialCoordinates, HexTile> entry : this.tiles.entrySet()) {
+            if (entry.getValue().hasColor(color)) coloredTiles.put(entry.getKey(), entry.getValue());
+        }
+
+        return coloredTiles;
+    }
+
+    /**
+     * Check if the current player has won
+     * @param color The color of the player
+     * @param boardSize The size of the board
+     * @return The winning path
+     */
+    public Collection<AxialCoordinates> checkWin(HexColor color, int boardSize) {
+        Map<AxialCoordinates, HexTile> coloredTiles = this.getTilesCoordinatesByColor(color);
+        Collection<AxialCoordinates> seen = new HashSet<>();
+        Queue<AxialCoordinates> neighborsToVisit = new LinkedList<>();
+
+        /* Get tiles on borders (distance 0 or with one of it's component equals to the board rayon) */
+        for(Entry<AxialCoordinates, HexTile> entry : coloredTiles.entrySet()) {
+            if(entry.getValue().isNotOnBorders(boardSize)) continue; // If we're inside or outside the board, we don't need to add the tile
+            neighborsToVisit.add(entry.getKey()); // Add the tile to the queue
+        }
+
+        while(!neighborsToVisit.isEmpty()) {
+            AxialCoordinates currentCoords = neighborsToVisit.poll(); // Get the first element of the queue
+            HexTile currentTile = coloredTiles.get(currentCoords); // Try to get the tile at the current coordinates.
+            
+            if(currentTile == null || seen.contains(currentCoords))
+                continue; // Prevent continuing if the tile is null or if the tile has been already seen
+
+            seen.add(currentCoords); // Add the current tile to the seen list
+
+            /* Check if we reached the other side */
+            // if(currentTile.contains(boardSize))
+            // //     return seen; // If we reached the other side, then we return the path
+
+            /* Add neighbors to the queue */
+            neighborsToVisit.addAll(currentCoords.getNeighbors());
+        }
+
+        return seen;
+    }
+    
     private HexTile getTileAt(int q, int r) { // O(1)
         return this.tiles.get(new AxialCoordinates(q, r));
     }

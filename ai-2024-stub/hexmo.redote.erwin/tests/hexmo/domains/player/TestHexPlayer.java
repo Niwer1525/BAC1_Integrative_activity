@@ -49,6 +49,14 @@ public class TestHexPlayer {
     }
 
     @Test
+    public void test_hasColor() {
+        HexPlayer player = new HexPlayer(PLAYER_2_NAME, HexColor.BLUE);
+
+        assertEquals(true, player.hasColor(HexColor.BLUE));
+        assertEquals(false, player.hasColor(HexColor.RED));
+    }
+
+    @Test
     public void test_toString() {
         HexPlayer player = new HexPlayer(PLAYER_2_NAME, HexColor.BLUE);
 

@@ -3,6 +3,7 @@ package hexmo.domains;
 import java.util.Collection;
 
 import hexmo.domains.board.HexBoard;
+import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.domains.player.HexPlayer;
@@ -19,6 +20,7 @@ public class HexGame {
     public static final int NO_PLAY_ERROR = 0;
     public static final int ERROR_TILE_NOT_VALID = 1;
     public static final int ERROR_TILE_CLAIMED = 2;
+    public static final int END_GAME = 2;
 
     private final HexBoard board;
     private final HexPlayer player1;
@@ -104,6 +106,9 @@ public class HexGame {
         /* Update the color of the tile */
 		this.board.getActiveTile().setColor(this.turnPlayer.getColor());
 
+        /* Check if the player has won */ //TODO
+        //this.board.checkWin(this.turnPlayer.getColor(), this.boardSize);
+
         /* Switch turn */
         this.switchTurn();
         
@@ -148,7 +153,7 @@ public class HexGame {
     }
 
     private boolean canBeClaimed(HexTile tile) {
-        return tile.isNotOnBorders(boardSize) || tile.contains(this.turnPlayer.getColor() == HexColor.RED ? boardSize : -boardSize);
+        return tile.isNotOnBorders(this.boardSize) || tile.contains(this.turnPlayer.hasColor(HexColor.RED) ? this.boardSize : -this.boardSize);
     }
     
     /**
@@ -157,5 +162,9 @@ public class HexGame {
      */
     public Collection<HexTile> updateHelper() {
         return this.board.updateHelper(this.turnPlayer.getColor());
+    }
+
+    public Collection<AxialCoordinates> cccp() {
+        return this.board.checkWin(HexColor.RED, boardSize);
     }
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import hexmo.domains.HexGame;
 import hexmo.domains.IHexGameFactory;
+import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.supervisors.commons.TileType;
@@ -85,8 +86,12 @@ public class PlayGameSupervisor {
 			case HexGame.ERROR_TILE_CLAIMED:
 				view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
 				break;
+			// case HexGame.END_GAME:
+			// 	view.goTo(ViewId.END_GAME);
+			// 	break;
 			default: break;
 		}
+		view.goTo(ViewId.END_GAME);
 	}
 
 	/**
@@ -118,9 +123,12 @@ public class PlayGameSupervisor {
 
 		/* Reset all tiles to there current color and then update the helper and display the helping tiles */
 		this.updateTiles(this.gameFactory.getCurrentGame().getTiles(), null); // O(n) ou n correspond au nombre de cases que contient la collection produite par getTiles()
-		if(!entry) // Useful to prevent from loading and calculating the helper tiles when entering the game
-			this.updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
+		// if(!entry) // Useful to prevent from loading and calculating the helper tiles when entering the game
+		// 	this.updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
 
+		for(AxialCoordinates tile : this.gameFactory.getCurrentGame().cccp())
+			this.view.setTileAt(tile.asX(), tile.asY(), TileType.HIGHLIGHT);
+		
 		/* Update messages */
 		this.updateViewMessages();
 	}

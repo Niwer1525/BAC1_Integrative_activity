@@ -46,6 +46,15 @@ public class HexPlayer {
     }
 
     /**
+     * Check if the player has the given color
+     * @param color The color to check
+     * @return True if the player has the given color
+     */
+    public boolean hasColor(HexColor color) {
+        return this.color == color;
+    }
+    
+    /**
      * Swap the color of this player with the given player
      * @param player2 The player to swap color with
      */
