@@ -31,6 +31,10 @@ public class HexTile {
     private final AxialCoordinates coords;
     private HexColor color;
 
+    /**
+     * Create a copy of the given tile
+     * @param original The tile to copy
+     */
     public HexTile(HexTile original) {
         this.coords = original.coords;
         this.color = original.color;
@@ -125,12 +129,7 @@ public class HexTile {
      * @throws IllegalArgumentException if boardSize is negative
      */
     public boolean isNotOnBorders(int boardSize) {
-        if(boardSize < 0) throw new IllegalArgumentException("Size must be positive");
-        boolean a = this.getQ() != boardSize && this.getQ() != -boardSize;
-        boolean b = this.getR() != boardSize && this.getR() != -boardSize;
-        boolean c = this.getS() != boardSize && this.getS() != -boardSize;
-        
-        return a && b && c;
+        return this.getCoords().isNotOnBorders(boardSize);
     }
     
     @Override

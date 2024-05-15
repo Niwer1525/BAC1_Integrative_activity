@@ -14,6 +14,15 @@ public class AxialCoordinates {
     private final int q;
     private final int r;
     private final int s;
+    private int border;
+
+    /**
+     * Create a copy of the given coordinates
+     * @param original The coordinates to copy
+     */
+    public AxialCoordinates(AxialCoordinates original) {
+        this(original.q, original.r);
+    }
 
     /**
      * Create a new AxialCoordinates with the given <code>Q</code> and <code>R</code>
@@ -75,7 +84,7 @@ public class AxialCoordinates {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj) || (obj instanceof AxialCoordinates coords && coords.q == q && coords.r == r);
+        return super.equals(obj) || (obj instanceof AxialCoordinates coords && coords.q == q && coords.r == r && coords.s == s);
     }
 
     /**
@@ -125,6 +134,21 @@ public class AxialCoordinates {
     }
 
     /**
+     * Check if the tile is not on the borders of the board
+     * @param boardSize The size of the board
+     * @return True if the tile is not on the borders of the board
+     * @throws IllegalArgumentException if boardSize is negative
+     */
+    public boolean isNotOnBorders(int boardSize) {
+        if(boardSize < 0) throw new IllegalArgumentException("Size must be positive");
+        boolean a = this.getQ() != boardSize && this.getQ() != -boardSize;
+        boolean b = this.getR() != boardSize && this.getR() != -boardSize;
+        boolean c = this.getS() != boardSize && this.getS() != -boardSize;
+        
+        return a && b && c;
+    }
+
+    /**
      * Convert the display coords to the axial coords
      * @param x The X value
      * @param y The Y value
@@ -134,5 +158,17 @@ public class AxialCoordinates {
         int q = (int)(x / (Math.sqrt(3) / 2.0));
         int r = (int)(y / (3.0 / 2.0)) + y;
         return new AxialCoordinates(q, r);
+    }
+
+    /**
+     * Set the border from where this coords are from
+     * @param border The border value
+     */
+    public void setBorder(int border) {
+        this.border = border;
+    }
+
+    public int getBorder() {
+        return this.border;
     }
 }

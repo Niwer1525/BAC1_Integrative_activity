@@ -34,7 +34,12 @@ public class GameOverSupervisor {
 	 * */
 	public void onEnter(ViewId fromView) {
 		//TODO : générer les résultats et les afficher.
-		this.view.setStats("Le vinqueur est ","P1 (Rouge)");
+		this.view.setStats(
+			"Vainqueur est P1 (Rouge)",
+			"Score de P1 5.0",
+			"Score de P2 2.5",
+			"Taux de remplissage moyen 24%"
+		);
 	}
 
 	/**

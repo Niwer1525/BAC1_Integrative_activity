@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 
 import hexmo.domains.board.tiles.AxialCoordinates;
@@ -94,6 +93,7 @@ public class HexBoard {
      * @return The target tile, Or null if outside the board dimensions
      */
     public HexTile moveTo(int dx, int dy) {
+        if(dx == 0 && dy == 0) return this.activeTile;
         AxialCoordinates coords = this.activeTile.getCoords().add(AxialCoordinates.fromXYCoords(dx, dy));
         HexTile tile = this.getTileAt(coords.getQ(), coords.getR());
         if(tile == null) return this.activeTile;
@@ -108,7 +108,7 @@ public class HexBoard {
     public Collection<HexTile> getTiles() {
         Collection<HexTile> tiles = new ArrayList<>(this.tiles.size());
         for (HexTile tile : this.tiles.values())
-            tiles.add(tile);
+            tiles.add(new HexTile(tile));
         return tiles;
     }
 
@@ -185,51 +185,54 @@ public class HexBoard {
         helperTiles.addAll(commonNeighbors); // O(1)
     }
 
-    private Map<AxialCoordinates, HexTile> getTilesCoordinatesByColor(HexColor color) {
-        Map<AxialCoordinates, HexTile> coloredTiles = new HashMap<>();
+    private Collection<AxialCoordinates> getTilesCoordinatesByColor(HexColor color) {
+        Collection<AxialCoordinates> coloredTiles = new ArrayList<>();
 
-        for(Entry<AxialCoordinates, HexTile> entry : this.tiles.entrySet()) {
-            if (entry.getValue().hasColor(color)) coloredTiles.put(entry.getKey(), entry.getValue());
+        /* Filter all tiles for the given color */
+        for(HexTile tile : this.getTiles()) {
+            if(tile.hasColor(color))
+                coloredTiles.add(new AxialCoordinates(tile.getCoords()));
         }
 
         return coloredTiles;
     }
 
     /**
+     * <h2>Breadth First Search</h2>
      * Check if the current player has won
      * @param color The color of the player
      * @param boardSize The size of the board
      * @return The winning path
      */
-    public Collection<AxialCoordinates> checkWin(HexColor color, int boardSize) {
-        Map<AxialCoordinates, HexTile> coloredTiles = this.getTilesCoordinatesByColor(color);
-        Collection<AxialCoordinates> seen = new HashSet<>();
-        Queue<AxialCoordinates> neighborsToVisit = new LinkedList<>();
+    public int findPathLength(HexColor color, int boardSize) {
+        return this.findPath(color, boardSize).size();
+    }
+
+    //TODO
+    public Collection<AxialCoordinates> findPath(HexColor color, int boardSize) {
+        Collection<AxialCoordinates> coloredTiles = this.getTilesCoordinatesByColor(color);
+        Collection<AxialCoordinates> visited = new HashSet<>();
+        Queue<AxialCoordinates> toVisit = new LinkedList<>();
 
         /* Get tiles on borders (distance 0 or with one of it's component equals to the board rayon) */
-        for(Entry<AxialCoordinates, HexTile> entry : coloredTiles.entrySet()) {
-            if(entry.getValue().isNotOnBorders(boardSize)) continue; // If we're inside or outside the board, we don't need to add the tile
-            neighborsToVisit.add(entry.getKey()); // Add the tile to the queue
+        for(AxialCoordinates entry : coloredTiles) {
+            if(entry.isNotOnBorders(boardSize)) continue; // If we're inside or outside the board, we don't need to add the tile
+            visited.add(entry); // Add the tile to the seen list
+            toVisit.add(entry); // Add the tile to the queue
         }
 
-        while(!neighborsToVisit.isEmpty()) {
-            AxialCoordinates currentCoords = neighborsToVisit.poll(); // Get the first element of the queue
-            HexTile currentTile = coloredTiles.get(currentCoords); // Try to get the tile at the current coordinates.
-            
-            if(currentTile == null || seen.contains(currentCoords))
-                continue; // Prevent continuing if the tile is null or if the tile has been already seen
-
-            seen.add(currentCoords); // Add the current tile to the seen list
-
-            /* Check if we reached the other side */
-            // if(currentTile.contains(boardSize))
-            // //     return seen; // If we reached the other side, then we return the path
-
-            /* Add neighbors to the queue */
-            neighborsToVisit.addAll(currentCoords.getNeighbors());
+        while(!toVisit.isEmpty()) {
+            AxialCoordinates currentCoords = toVisit.poll(); // Get the first element of the queue
+            for(AxialCoordinates neighbor : currentCoords.getNeighbors()) {
+                if(!coloredTiles.contains(neighbor)) continue; // Prevent from continuing if the tile is not the same color as the player
+                if(!visited.contains(neighbor)) {
+                    visited.add(neighbor); // Add the current tile to the seen list
+                    toVisit.add(neighbor); // Add neighbors to the queue
+                }
+            }
         }
 
-        return seen;
+        return visited;
     }
     
     private HexTile getTileAt(int q, int r) { // O(1)

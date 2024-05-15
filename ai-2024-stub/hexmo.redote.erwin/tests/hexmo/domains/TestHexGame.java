@@ -210,9 +210,25 @@ public class TestHexGame {
         assertEquals(HexGame.NO_PLAY_ERROR, errorCode);
     }
 
-    private HexTile move(HexGame game, int q, int r) {
+    @Test
+    public void test_updateHelperTiles() {
+        HexGame game = new HexGame(3);
+
+        Collection<HexTile> helperTiles = game.updateHelper();
+        assertEquals(0, helperTiles.size());
+    }
+
+    public static HexTile move(HexGame game, int q, int r) {
         HexTile tile = game.moveTo(0, 0);
 
+        /* Move to 0, 0 */
+        for(int i = 0; i < Math.abs(tile.getQ()); i++)
+            tile = game.moveTo(tile.getQ() < 0 ? 1 : -1, 0);
+        
+        for(int j = 0; j < Math.abs(tile.getR()); j++)
+            tile = game.moveTo(0, tile.getR() < 0 ? 1 : -1);
+
+        /* Move to the new timle*/
         for(int i = 0; i < Math.abs(q); i++)
             tile = game.moveTo(q < 0 ? -1 : 1, 0);
         
@@ -220,13 +236,5 @@ public class TestHexGame {
             tile = game.moveTo(0, r < 0 ? -1 : 1);
 
         return tile;
-    }
-
-    @Test
-    public void test_updateHelperTiles() {
-        HexGame game = new HexGame(3);
-
-        Collection<HexTile> helperTiles = game.updateHelper();
-        assertEquals(0, helperTiles.size());
     }
 }

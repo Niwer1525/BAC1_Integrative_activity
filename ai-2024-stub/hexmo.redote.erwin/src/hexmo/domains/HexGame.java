@@ -20,7 +20,7 @@ public class HexGame {
     public static final int NO_PLAY_ERROR = 0;
     public static final int ERROR_TILE_NOT_VALID = 1;
     public static final int ERROR_TILE_CLAIMED = 2;
-    public static final int END_GAME = 2;
+    public static final int END_GAME = 3;
 
     private final HexBoard board;
     private final HexPlayer player1;
@@ -107,7 +107,7 @@ public class HexGame {
 		this.board.getActiveTile().setColor(this.turnPlayer.getColor());
 
         /* Check if the player has won */ //TODO
-        //this.board.checkWin(this.turnPlayer.getColor(), this.boardSize);
+        // if(this.board.findPathLength(this.turnPlayer.getColor(), this.boardSize) != -1) return END_GAME;
 
         /* Switch turn */
         this.switchTurn();
@@ -164,7 +164,7 @@ public class HexGame {
         return this.board.updateHelper(this.turnPlayer.getColor());
     }
 
-    public Collection<AxialCoordinates> cccp() {
-        return this.board.checkWin(HexColor.RED, boardSize);
+    public Collection<AxialCoordinates> cccp() { //TODO
+        return this.board.findPath(HexColor.RED, boardSize);
     }
 }

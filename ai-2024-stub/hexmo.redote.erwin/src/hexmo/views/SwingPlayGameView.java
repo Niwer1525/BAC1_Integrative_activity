@@ -60,7 +60,7 @@ public class SwingPlayGameView extends SwingView<ViewId> implements PlayGameView
         this.supervisor = Objects.requireNonNull(supervisor);
         this.supervisor.setView(this);
 
-		this.background = new ImageIcon("resources/images/play-game-background.jpg");
+		this.background = new ImageIcon("/resources/images/play-game-background.jpg");
 
         this.camera = new Camera(Vector2f.ZERO, new Vector2f(.5f,.5f), Vector2f.X_AXIS);
         this.clock = new Timer(16, (evt) -> onNewFrameRequested() );

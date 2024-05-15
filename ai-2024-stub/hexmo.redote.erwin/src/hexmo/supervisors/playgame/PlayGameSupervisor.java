@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import hexmo.domains.HexGame;
 import hexmo.domains.IHexGameFactory;
+import hexmo.domains.TestHexGame;
 import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
@@ -45,6 +46,11 @@ public class PlayGameSupervisor {
 		if (ViewId.MAIN_MENU == fromView) {
 			view.clearTiles(); // O(n) ou n correspond au nombre de cases que contient la collection de la vue
 			view.setActiveTile(0, 0);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -3).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -1).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, -1).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 2, -1).setColor(HexColor.RED);
+			// TestHexGame.move(this.gameFactory.getCurrentGame(), 3, -3).setColor(HexColor.RED);
 			this.drawBoard(true); // O(n) ou n correspond au nombre de cases que contient la collection produite par getTiles()
 		}
 	}
@@ -86,12 +92,11 @@ public class PlayGameSupervisor {
 			case HexGame.ERROR_TILE_CLAIMED:
 				view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
 				break;
-			// case HexGame.END_GAME:
-			// 	view.goTo(ViewId.END_GAME);
-			// 	break;
+			case HexGame.END_GAME:
+				view.goTo(ViewId.END_GAME);
+				break;
 			default: break;
 		}
-		view.goTo(ViewId.END_GAME);
 	}
 
 	/**
