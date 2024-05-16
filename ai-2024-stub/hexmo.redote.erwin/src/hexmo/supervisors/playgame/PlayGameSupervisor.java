@@ -48,9 +48,9 @@ public class PlayGameSupervisor {
 			view.setActiveTile(0, 0);
 			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -3).setColor(HexColor.RED);
 			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -1).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, -1).setColor(HexColor.RED);
+			// TestHexGame.move(this.gameFactory.getCurrentGame(), 1, -1).setColor(HexColor.RED);
 			TestHexGame.move(this.gameFactory.getCurrentGame(), 2, -1).setColor(HexColor.RED);
-			// TestHexGame.move(this.gameFactory.getCurrentGame(), 3, -3).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 3, -3).setColor(HexColor.RED);
 			this.drawBoard(true); // O(n) ou n correspond au nombre de cases que contient la collection produite par getTiles()
 		}
 	}
