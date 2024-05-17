@@ -132,6 +132,16 @@ public class HexTile {
         return this.getCoords().isNotOnBorders(boardSize);
     }
     
+    /**
+     * Check if the tile can be claimed by the current player
+     * @param boardSize The size of the board
+     * @param isRed True if the current player is red
+     * @return True if the tile can be claimed by the current player
+     */
+    public boolean canBeClaimed(int boardSize, boolean isRed) {
+        return this.isNotOnBorders(boardSize) || this.contains(isRed ? boardSize : -boardSize);
+    }
+
     @Override
     public String toString() {
         return String.format("Tile at [%s] with type %s", this.coords, this.color);

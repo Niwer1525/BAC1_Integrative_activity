@@ -3,7 +3,6 @@ package hexmo.domains;
 import java.util.Collection;
 
 import hexmo.domains.board.HexBoard;
-import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.domains.player.HexPlayer;
@@ -106,8 +105,10 @@ public class HexGame {
         /* Update the color of the tile */
 		this.board.getActiveTile().setColor(this.turnPlayer.getColor());
 
-        /* Check if the player has won */ //TODO
-        // if(this.board.findPathLength(this.turnPlayer.getColor(), this.boardSize) != -1) return END_GAME;
+        /* Check if the player has won */
+        if(this.board.findPath(this.turnPlayer.getColor(), this.boardSize) != -1) 
+            // So if we found a path, the game is over
+            return END_GAME;
 
         /* Switch turn */
         this.switchTurn();
@@ -153,7 +154,7 @@ public class HexGame {
     }
 
     private boolean canBeClaimed(HexTile tile) {
-        return tile.isNotOnBorders(this.boardSize) || tile.contains(this.turnPlayer.hasColor(HexColor.RED) ? this.boardSize : -this.boardSize);
+        return tile.canBeClaimed(this.boardSize, this.turnPlayer.hasColor(HexColor.RED));
     }
     
     /**
@@ -162,9 +163,5 @@ public class HexGame {
      */
     public Collection<HexTile> updateHelper() {
         return this.board.updateHelper(this.turnPlayer.getColor());
-    }
-
-    public Collection<AxialCoordinates> cccp() { //TODO
-        return this.board.findPath(HexColor.RED, boardSize);
     }
 }

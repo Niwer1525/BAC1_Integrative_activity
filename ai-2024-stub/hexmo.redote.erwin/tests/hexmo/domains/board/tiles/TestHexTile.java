@@ -111,4 +111,15 @@ public class TestHexTile {
         HexTile tile = new HexTile(new AxialCoordinates(3, 0), HexColor.BLUE);
         assertTrue(tile.isNotOnBorders(2));
     }
+
+    @Test
+    public void testCanBeClaimed() {
+        HexTile tile = new HexTile(new AxialCoordinates(0, 1), HexColor.BLUE);
+        assertTrue(tile.canBeClaimed(3, true));
+        assertTrue(tile.canBeClaimed(3, false));
+
+        HexTile tile2 = new HexTile(new AxialCoordinates(1, -3), HexColor.BLUE);
+        assertFalse(tile2.canBeClaimed(3, true)); // Red cannot claim center tile on the top border (Blue)
+        assertTrue(tile2.canBeClaimed(3, false));
+    }
 }

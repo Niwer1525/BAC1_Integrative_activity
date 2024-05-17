@@ -2,10 +2,13 @@ package hexmo.domains.board.tiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
 import hexmo.domains.HexGame;
+import hexmo.domains.board.EnumBorder;
+import hexmo.domains.player.HexColor;
 
 public class TestAxialCoordinates {
 
@@ -72,5 +75,59 @@ public class TestAxialCoordinates {
         AxialCoordinates coords = new AxialCoordinates(0, 0);
         AxialCoordinates coords2 = new AxialCoordinates(1, 0);
         assertEquals(2, coords.getCommonNeighborsWith(coords2).size());
+    }
+
+    @Test
+    public void test_getBorderTop_NotOnBorders() {
+        AxialCoordinates coord = new AxialCoordinates(0, 0);
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.RED));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.BLUE));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.UNKNOWN));
+    }
+
+    @Test
+    public void test_getBorder_OnBorder() {
+        AxialCoordinates coord = new AxialCoordinates(1, -3);
+        assertEquals(EnumBorder.TOP, coord.getBorderForCoords(3, HexColor.BLUE));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.RED));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.UNKNOWN));
+    }
+
+    @Test
+    public void test_getBorderTop_OnBorderWithCorner() {
+        AxialCoordinates coord = new AxialCoordinates(0, -3);
+        assertEquals(EnumBorder.TOP, coord.getBorderForCoords(3, HexColor.BLUE));
+        assertEquals(EnumBorder.TOP_LEFT, coord.getBorderForCoords(3, HexColor.RED));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.UNKNOWN));
+    }
+
+    @Test
+    public void test_getBorderBottom_OnBorder() {
+        AxialCoordinates coord = new AxialCoordinates(-2, 3);
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.BLUE));
+        assertEquals(EnumBorder.BOTTOM, coord.getBorderForCoords(3, HexColor.RED));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.UNKNOWN));
+    }
+
+    @Test
+    public void test_getBorderBottom_OnBorderWithCorner() {
+        AxialCoordinates coord = new AxialCoordinates(-3, 3);
+        assertEquals(EnumBorder.BOTTOM, coord.getBorderForCoords(3, HexColor.RED));
+        assertEquals(EnumBorder.BOTTOM_LEFT, coord.getBorderForCoords(3, HexColor.BLUE));
+        assertEquals(EnumBorder.UNKNOWN, coord.getBorderForCoords(3, HexColor.UNKNOWN));
+    }
+
+    @Test
+    public void test_getBorderBottomRight_OnBorderWithCorner() {
+        AxialCoordinates coord = new AxialCoordinates(0, 3);
+        assertEquals(EnumBorder.BOTTOM_RIGHT, coord.getBorderForCoords(3, HexColor.BLUE));
+    }
+    
+    @Test
+    public void test_getBorder_Null() {
+        AxialCoordinates coord = new AxialCoordinates(0, 3);
+        assertThrows(IllegalArgumentException.class, () -> {
+            coord.getBorderForCoords(3, null);
+        });
     }
 }

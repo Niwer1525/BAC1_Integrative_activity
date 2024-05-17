@@ -6,7 +6,6 @@ import java.util.Objects;
 import hexmo.domains.HexGame;
 import hexmo.domains.IHexGameFactory;
 import hexmo.domains.TestHexGame;
-import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.supervisors.commons.TileType;
@@ -46,11 +45,25 @@ public class PlayGameSupervisor {
 		if (ViewId.MAIN_MENU == fromView) {
 			view.clearTiles(); // O(n) ou n correspond au nombre de cases que contient la collection de la vue
 			view.setActiveTile(0, 0);
+
+			//RED
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -4).setColor(HexColor.RED);
 			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -3).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -1).setColor(HexColor.RED);
-			// TestHexGame.move(this.gameFactory.getCurrentGame(), 1, -1).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 2, -1).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 3, -3).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -2).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), -1, -1).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), -1, 0).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, 0).setColor(HexColor.RED);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, 0).setColor(HexColor.RED);
+			
+			//BLUE
+			TestHexGame.move(this.gameFactory.getCurrentGame(), -4, 2).setColor(HexColor.BLUE);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), -3, 2).setColor(HexColor.BLUE);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), -2, 2).setColor(HexColor.BLUE);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), -1, 2).setColor(HexColor.BLUE);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, 2).setColor(HexColor.BLUE);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, 2).setColor(HexColor.BLUE);
+			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, 3).setColor(HexColor.BLUE);
+
 			this.drawBoard(true); // O(n) ou n correspond au nombre de cases que contient la collection produite par getTiles()
 		}
 	}
@@ -128,11 +141,9 @@ public class PlayGameSupervisor {
 
 		/* Reset all tiles to there current color and then update the helper and display the helping tiles */
 		this.updateTiles(this.gameFactory.getCurrentGame().getTiles(), null); // O(n) ou n correspond au nombre de cases que contient la collection produite par getTiles()
-		// if(!entry) // Useful to prevent from loading and calculating the helper tiles when entering the game
-		// 	this.updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
+		if(!entry) // Useful to prevent from loading and calculating the helper tiles when entering the game
+			this.updateTiles(this.gameFactory.getCurrentGame().updateHelper(), TileType.HIGHLIGHT);
 
-		for(AxialCoordinates tile : this.gameFactory.getCurrentGame().cccp())
-			this.view.setTileAt(tile.asX(), tile.asY(), TileType.HIGHLIGHT);
 		
 		/* Update messages */
 		this.updateViewMessages();

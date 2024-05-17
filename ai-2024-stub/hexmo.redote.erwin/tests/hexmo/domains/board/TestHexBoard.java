@@ -114,4 +114,70 @@ public class TestHexBoard {
         board.moveTo(-1, 1).setColor(HexColor.RED);
         assertEquals(2, board.updateHelper(HexColor.RED).size());
     }
+
+    @Test
+    public void test_findPathLength_case1() {
+        final int boardSize = 3;
+        HexBoard board = new HexBoard(boardSize);
+        move(board, 0, -3).setColor(HexColor.RED);
+        move(board, 0, -1).setColor(HexColor.RED);
+        move(board, 1, -1).setColor(HexColor.RED);
+        move(board, 2, -1).setColor(HexColor.RED);
+        move(board, 3, -3).setColor(HexColor.RED);
+        assertEquals(-1, board.findPath(HexColor.BLUE, boardSize));
+        assertEquals(5, board.findPath(HexColor.RED, boardSize));
+    }
+
+    @Test
+    public void test_findPathLength_case2() {
+        final int boardSize = 4;
+        HexBoard board = new HexBoard(boardSize);
+
+        //RED
+        move(board, 0, -4).setColor(HexColor.RED);
+        move(board, 0, -3).setColor(HexColor.RED);
+        move(board, 0, -2).setColor(HexColor.RED);
+        move(board, -1, -1).setColor(HexColor.RED);
+        move(board, -1, 0).setColor(HexColor.RED);
+        move(board, 0, 0).setColor(HexColor.RED);
+        move(board, 1, 0).setColor(HexColor.RED);
+        
+        //BLUE
+        move(board, -4, 2).setColor(HexColor.BLUE);
+        move(board, -3, 2).setColor(HexColor.BLUE);
+        move(board, -2, 2).setColor(HexColor.BLUE);
+        move(board, -1, 2).setColor(HexColor.BLUE);
+        move(board, 0, 2).setColor(HexColor.BLUE);
+        move(board, 1, 2).setColor(HexColor.BLUE);
+        move(board, 1, 3).setColor(HexColor.BLUE);
+
+        assertEquals(7, board.findPath(HexColor.RED, boardSize));
+    }
+
+    @Test
+    public void test_findPathLength_case3() {
+        
+    }
+
+    @Test
+    public void test_findPathLength_case4() {
+    }
+
+    public static HexTile move(HexBoard board, int q, int r) {
+        // Methode pour me rendre la vie plus facile en utilsant la réflection java 
+        // (Seul moyen que j'ai d'obtenir les attributs privés ainsi que les méthodes privées d'une classe sans faire râler PMD)
+        try {
+            // Tentons d'invoker la methode "getTileAt"
+            var getTileMethod = HexBoard.class.getDeclaredMethod("getTileAt", int.class, int.class);
+            getTileMethod.setAccessible(true); // Rendre accessible
+            
+            var tile = (HexTile) getTileMethod.invoke(board, q, r); // Récupérer avec l'instance
+
+            return tile != null ? tile : board.moveTo(0, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // A priori je contiens mes tests donc ceci ne devrait pas se produire.
+        }
+        return board.moveTo(0, 0);
+    }
 }

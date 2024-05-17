@@ -38,7 +38,7 @@ public class GameOverSupervisor {
 			"Vainqueur est P1 (Rouge)",
 			"Score de P1 5.0",
 			"Score de P2 2.5",
-			"Taux de remplissage moyen 24%"
+			String.format("Taux de remplissage moyen %s", "24")
 		);
 	}
 
@@ -46,7 +46,6 @@ public class GameOverSupervisor {
 	 * Méthode appelée par la vue quand l'utilisateur souhaite retourner au menu principal.
 	 * */
 	public void onGoToMain() {
-		//TODO : retourner au menu principal
 		this.view.goTo(ViewId.MAIN_MENU);
 	}
 }

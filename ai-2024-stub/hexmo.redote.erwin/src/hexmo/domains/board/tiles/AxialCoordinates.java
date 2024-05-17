@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.tngtech.archunit.thirdparty.com.google.common.collect.Sets;
 
+import hexmo.domains.board.EnumBorder;
 import hexmo.domains.player.HexColor;
 
 /**
@@ -16,15 +17,6 @@ public class AxialCoordinates {
     private final int q;
     private final int r;
     private final int s;
-    private EnumBorder border;
-
-    /**
-     * Create a copy of the given coordinates
-     * @param original The coordinates to copy
-     */
-    public AxialCoordinates(AxialCoordinates original) {
-        this(original.q, original.r);
-    }
 
     /**
      * Create a new AxialCoordinates with the given <code>Q</code> and <code>R</code>
@@ -163,48 +155,28 @@ public class AxialCoordinates {
     }
 
     /**
-     * Set the border from where this coords are from
-     * @param border The border value
-     */
-    public void setBorder(EnumBorder border) {
-        if(this.border == null) this.border = border;
-    }
-
-    /**
-     * Get the border of the tile
-     * @return The border of the tile
-     */
-    public EnumBorder getBorder() {
-        return this.border;
-    }
-
-    /**
      * Get the border of the given coords
      * @param coords The coordinates
      * @param boardSize The size of the board
      * @param color The color of the player
      * @return The border on which the coords are
      */
-    public static EnumBorder getBorderForCoords(AxialCoordinates coords, int boardSize, HexColor color) {
-        /* Bottom & variants */
-        if(color == HexColor.BLUE && coords.q == -boardSize) return EnumBorder.BOTTOM_LEFT;
-        if(color == HexColor.RED && coords.r == boardSize) return EnumBorder.BOTTOM;
-        if(color == HexColor.BLUE && coords.s == -boardSize) return EnumBorder.BOTTOM_RIGHT;
-
-        /* Top & variants */
-        if(color == HexColor.RED && coords.q == boardSize) return EnumBorder.TOP_RIGHT;
-        if(color == HexColor.BLUE && coords.r == -boardSize) return EnumBorder.TOP;
-        if(color == HexColor.RED && coords.s == boardSize) return EnumBorder.TOP_LEFT;
-        return EnumBorder.TOP; // Default value (Should never be reached)
-    }
-
-    /**
-     * Get the distance between two coordinates
-     * @param coords The first coordinates
-     * @param coords2 The second coordinates
-     * @return The distance between the two coordinates
-     */
-    public static int getDistance(AxialCoordinates a, AxialCoordinates b) {
-        return (Math.abs(a.q - b.q) + Math.abs(a.r - b.r) + Math.abs(a.s - b.s)) / 2;
+    public EnumBorder getBorderForCoords(int boardSize, HexColor color) {
+        if(color == null) throw new IllegalArgumentException("Color must not be null");
+        switch (color) {
+            case BLUE:
+                if(this.q == -boardSize) return EnumBorder.BOTTOM_LEFT;
+                if(this.r == -boardSize) return EnumBorder.TOP;
+                if(this.s == -boardSize) return EnumBorder.BOTTOM_RIGHT;
+                break;
+            case RED:
+                if(this.q == boardSize) return EnumBorder.TOP_RIGHT;
+                if(this.r == boardSize) return EnumBorder.BOTTOM;
+                if(this.s == boardSize) return EnumBorder.TOP_LEFT;
+                break;
+            case UNKNOWN: break;
+            default: break;
+        }
+        return EnumBorder.UNKNOWN; // Default value (Should never be reached)
     }
 }
