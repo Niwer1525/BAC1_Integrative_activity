@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 
 import hexmo.domains.board.path.PathCoords;
+import hexmo.domains.board.path.PathFinder;
 import hexmo.domains.board.tiles.AxialCoordinates;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
@@ -62,6 +61,7 @@ import hexmo.domains.player.HexColor;
  *  @see AbstractCollection#retainAll
  */
 public class HexBoard {
+    private final PathFinder pathFinder;
     private final Map<AxialCoordinates, HexTile> tiles;
     private HexTile activeTile;
 
@@ -72,6 +72,7 @@ public class HexBoard {
      */
     public HexBoard(int boardSize) {
         if(boardSize < 0) throw new IllegalArgumentException("Board size must be positive");
+        this.pathFinder = new PathFinder(this);
         this.tiles = new HashMap<>();
 
         /* Adjusted loop limits for creating a hexagon */
@@ -187,7 +188,12 @@ public class HexBoard {
         helperTiles.addAll(commonNeighbors); // O(1)
     }
 
-    private Collection<PathCoords> getTilesCoordinatesForColor(HexColor color) {
+    /**
+     * Find all tiles that are the same color as the given color
+     * @param color The color to search for
+     * @return The tiles that are the same color as the given color
+     */
+    public Collection<PathCoords> getTilesCoordinatesForColor(HexColor color) {
         Collection<PathCoords> coloredTiles = new ArrayList<>();
 
         /* Filter all tiles for the given color */
@@ -198,56 +204,29 @@ public class HexBoard {
 
         return coloredTiles;
     }
+ 
+    /**
+     * Get all the tiles that are occupied. Useful for occupation average
+     * @return The occupied tiles
+     */
+    public int getOccupiedTiles() {
+        int occupiedTiles = 0;
+        for(HexTile tile : this.getTiles()) {
+            if(!tile.isEmpty()) occupiedTiles++;
+        }
+        return occupiedTiles;
+    }
 
     /**
-     * <h2>Breadth First Search</h2>
      * Check if the current player has won
      * @param color The color of the player
      * @param boardSize The size of the board
      * @return The winning path
      */
     public int findPath(HexColor color, int boardSize) {
-        Collection<PathCoords> coloredTiles = this.getTilesCoordinatesForColor(color);
-        Collection<PathCoords> visited = new HashSet<>();
-        Queue<PathCoords> toVisit = new LinkedList<>();
-
-        /* Get tiles on borders (distance 0 or with one of it's component equals to the board rayon) */
-        for(var entry : coloredTiles) {
-            if(entry.getCoords().isNotOnBorders(boardSize)) continue; // If we're inside or outside the board, we don't need to add the tile
-
-            entry.setBorder(boardSize, color); // Set the border of the tile
-            // entry.setLength(1); // Set the length of the path
-            visited.add(entry); // Add the tile to the seen list
-            toVisit.add(entry); // Add the tile to the queue
-        }
-
-        while(!toVisit.isEmpty()) {
-            var currentCoords = toVisit.poll(); // Get the first element of the queue (And by the way remove it from the queue)
-            for(var neighbor : currentCoords.getNeighbors()) {
-                if(!coloredTiles.contains(neighbor)) // If the tile isn't valid, then we continue
-                    continue;
-
-                if(visited.contains(neighbor)) {
-                    var visitedCoords = visited.stream().filter(c -> c.equals(neighbor)).findFirst().orElse(null);
-                    System.err.println(currentCoords + " / " + visitedCoords);
-                    if(visitedCoords != null && !currentCoords.isFromTheSameBorderAs(visitedCoords)) {
-                        // If we've already seen the tile and it's not the same border, then we've found the path
-                        return currentCoords.getLength() + visitedCoords.getLength() + 2;
-                    }
-                        
-                    continue;
-                }
-                
-                neighbor.setBorder(currentCoords.getBorder());
-                neighbor.setLength(currentCoords.getLength() + 1);
-                visited.add(neighbor); // Add the current tile to the seen list
-                toVisit.add(neighbor); // Add neighbors to the queue
-            }
-        }
-
-        return -1;
+        return this.pathFinder.findPath(color, boardSize);
     }
-    
+
     private HexTile getTileAt(int q, int r) { // O(1)
         return this.tiles.get(new AxialCoordinates(q, r));
     }

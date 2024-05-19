@@ -3,6 +3,7 @@ package hexmo.domains;
 import java.util.Collection;
 
 import hexmo.domains.board.HexBoard;
+import hexmo.domains.board.stats.HexStats;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.domains.player.HexPlayer;
@@ -22,9 +23,10 @@ public class HexGame {
     public static final int END_GAME = 3;
 
     private final HexBoard board;
+    private final int boardSize;
+    private final HexStats stats;
     private final HexPlayer player1;
     private final HexPlayer player2;
-    private final int boardSize;
 
     private HexPlayer turnPlayer;
     private boolean firstTurn = true;
@@ -38,6 +40,7 @@ public class HexGame {
         if(boardSize < 0) throw new IllegalArgumentException("Board size must be positive");
         this.board = new HexBoard(boardSize);
         this.boardSize = boardSize;
+        this.stats = new HexStats(this.boardSize, this.board);
         
         // For testing purposes, the first player is the red one and the second player is the blue one
         this.player1 = new HexPlayer("P1", HexColor.RED);
@@ -106,9 +109,12 @@ public class HexGame {
 		this.board.getActiveTile().setColor(this.turnPlayer.getColor());
 
         /* Check if the player has won */
-        if(this.board.findPath(this.turnPlayer.getColor(), this.boardSize) != -1) 
+        int pathDistance = this.board.findPath(this.turnPlayer.getColor(), this.boardSize);
+        if(pathDistance != -1) {
             // So if we found a path, the game is over
+            this.stats.calculateStats(this.turnPlayer, this.turnPlayer.equals(player1) ? player2 : player1, pathDistance);
             return END_GAME;
+        }
 
         /* Switch turn */
         this.switchTurn();
@@ -163,5 +169,26 @@ public class HexGame {
      */
     public Collection<HexTile> updateHelper() {
         return this.board.updateHelper(this.turnPlayer.getColor());
+    }
+
+    /**
+     * @return The stats of the game
+     */
+    public HexStats getStats() {
+        return this.stats;
+    }
+
+    /**
+     * @return The first player
+     */
+    public HexPlayer getPlayer1() {
+        return player1;
+    }
+
+    /**
+     * @return The second player
+     */
+    public HexPlayer getPlayer2() {
+        return player2;
     }
 }

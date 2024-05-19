@@ -3,10 +3,16 @@ package hexmo.supervisors.gameover;
 import java.util.Objects;
 
 import hexmo.domains.IHexGameFactory;
+import hexmo.domains.board.stats.HexStats;
 import hexmo.supervisors.commons.ViewId;
 
 /**
  * Réagit aux événements de haut-niveau de sa vue et lui fournit des données à afficher.
+ * 
+ * 
+ * /!\ Vous pouvez trouver l'algorithme de calcul des chemins dans PathFinder ainsi que les autres questions (It-3-q1, It-3-q2, It-3-q3) dans le fichier PathFinder.java
+ * @see hexmo.domains.board.path.PathFinder
+ * @see hexmo.domains.board.path.PathFinder#findPath(hexmo.domains.player.HexColor, int)
  * */
 public class GameOverSupervisor {
 	private GameOverView view;
@@ -33,12 +39,18 @@ public class GameOverSupervisor {
 	 * @param fromView la vue d'origine. Correspond a priori à une constante définie dans ViewNames.
 	 * */
 	public void onEnter(ViewId fromView) {
-		//TODO : générer les résultats et les afficher.
+		HexStats stats = this.gameFactory.getCurrentGame().getStats();
 		this.view.setStats(
-			"Vainqueur est P1 (Rouge)",
-			"Score de P1 5.0",
-			"Score de P2 2.5",
-			String.format("Taux de remplissage moyen %s", "24")
+			"RESULTATS DE LA PARTIE",
+			stats.getWinner(),
+			stats.getWinnerScore(),
+			stats.getLoserScore(),
+			stats.getBoardFillRate(),
+			"",
+			"STATISTIQUES TOTAL",
+			stats.getPlayerTotalScore(this.gameFactory.getCurrentGame().getPlayer1()),
+			stats.getPlayerTotalScore(this.gameFactory.getCurrentGame().getPlayer2()),
+			stats.getAverageBoardFillRate()
 		);
 	}
 

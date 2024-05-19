@@ -120,10 +120,11 @@ public class TestHexBoard {
         final int boardSize = 3;
         HexBoard board = new HexBoard(boardSize);
         move(board, 0, -3).setColor(HexColor.RED);
-        move(board, 0, -1).setColor(HexColor.RED);
-        move(board, 1, -1).setColor(HexColor.RED);
-        move(board, 2, -1).setColor(HexColor.RED);
+        move(board, 0, -2).setColor(HexColor.RED);
+        move(board, 1, -2).setColor(HexColor.RED);
+        move(board, 2, -2).setColor(HexColor.RED);
         move(board, 3, -3).setColor(HexColor.RED);
+
         assertEquals(-1, board.findPath(HexColor.BLUE, boardSize));
         assertEquals(5, board.findPath(HexColor.RED, boardSize));
     }
@@ -151,16 +152,85 @@ public class TestHexBoard {
         move(board, 1, 2).setColor(HexColor.BLUE);
         move(board, 1, 3).setColor(HexColor.BLUE);
 
-        assertEquals(7, board.findPath(HexColor.RED, boardSize));
+        assertEquals(-1, board.findPath(HexColor.RED, boardSize));
+        assertEquals(7, board.findPath(HexColor.BLUE, boardSize));
     }
 
     @Test
     public void test_findPathLength_case3() {
+        final int boardSize = 4;
+        HexBoard board = new HexBoard(boardSize);
+        move(board, 0, 0).setColor(HexColor.RED);
+        move(board, 0, 1).setColor(HexColor.RED);
+        move(board, 0, 2).setColor(HexColor.RED);
+        move(board, 0, 3).setColor(HexColor.RED);
+        move(board, -1, 4).setColor(HexColor.RED);
+        move(board, 1, -1).setColor(HexColor.RED);
+        move(board, 2, -1).setColor(HexColor.RED);
+        move(board, 2, -2).setColor(HexColor.RED);
+        move(board, 2, -3).setColor(HexColor.RED);
+        move(board, 1, -3).setColor(HexColor.RED);
+        move(board, 2, 0).setColor(HexColor.RED);
+        move(board, 2, 0).setColor(HexColor.RED);
+        move(board, 2, 1).setColor(HexColor.RED);
+        move(board, 3, 0).setColor(HexColor.RED);
+        move(board, 3, 0).setColor(HexColor.RED);
+        move(board, 4, -1).setColor(HexColor.RED);
         
+        assertEquals(-1, board.findPath(HexColor.BLUE, boardSize));
+        assertEquals(10, board.findPath(HexColor.RED, boardSize));
     }
 
     @Test
     public void test_findPathLength_case4() {
+        final int boardSize = 4;
+        HexBoard board = new HexBoard(boardSize);
+        move(board, 4, 0).setColor(HexColor.BLUE);
+        move(board, 3, 0).setColor(HexColor.BLUE);
+        move(board, 3, 0).setColor(HexColor.BLUE);
+        move(board, 3, -1).setColor(HexColor.BLUE);
+        move(board, 2, -1).setColor(HexColor.BLUE);
+        move(board, 1, 0).setColor(HexColor.BLUE);
+        move(board, 0, 1).setColor(HexColor.BLUE);
+        move(board, 0, 2).setColor(HexColor.BLUE);
+        move(board, 0, 3).setColor(HexColor.BLUE);
+        move(board, 1, 3).setColor(HexColor.BLUE);
+        move(board, 2, -4).setColor(HexColor.BLUE);
+        move(board, 1, -3).setColor(HexColor.BLUE);
+        move(board, 0, -2).setColor(HexColor.BLUE);
+        move(board, -1, -1).setColor(HexColor.BLUE);
+        move(board, -2, 0).setColor(HexColor.BLUE);
+        move(board, -3, 1).setColor(HexColor.BLUE);
+        move(board, -4, 2).setColor(HexColor.BLUE);
+
+        assertEquals(-1, board.findPath(HexColor.RED, boardSize));
+        assertEquals(7, board.findPath(HexColor.BLUE, boardSize));
+    }
+
+    @Test
+    public void test_findPathLength_caseExceptions() {
+        final int boardSize = 4;
+        HexBoard board = new HexBoard(boardSize);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            board.findPath(null, boardSize);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            board.findPath(HexColor.RED, -1);
+        });
+    }
+
+    @Test
+    public void test_getOccupiedTiles() {
+        HexBoard board = new HexBoard(3);
+        board.moveTo(0, 0).setColor(HexColor.RED);
+        board.moveTo(-1, -1).setColor(HexColor.RED);
+        board.moveTo(1, -1);
+        board.moveTo(0, -1).setColor(HexColor.RED);
+        board.moveTo(0, 1);
+        board.moveTo(0, 1).setColor(HexColor.RED);
+        assertEquals(4, board.getOccupiedTiles());
     }
 
     public static HexTile move(HexBoard board, int q, int r) {

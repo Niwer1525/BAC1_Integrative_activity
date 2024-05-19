@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import hexmo.domains.board.HexBoard;
 import hexmo.domains.board.TestHexBoard;
+import hexmo.domains.board.stats.HexStats;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 
@@ -161,20 +162,36 @@ public class TestHexGame {
     public void test_moveToAndPlay() {
         HexGame game = new HexGame(3);
 
-        int errorCode = game.play(false);
-        assertEquals(HexGame.NO_PLAY_ERROR, errorCode);
+        move(game, 0, -3).setColor(HexColor.RED);
+        move(game, 0, -2).setColor(HexColor.RED);
+        move(game, 1, -2).setColor(HexColor.RED);
+        move(game, 2, -2).setColor(HexColor.RED);
+        game.moveTo(1, -1);
+        game.moveTo(1, -1);
+        game.moveTo(1, -1);
+        int code = game.play(false);
 
-        HexTile tile = move(game, 0, -1);
-        errorCode = game.play(false);
-        assertEquals(HexColor.BLUE, tile.getColor());
+        assertEquals(HexColor.RED, move(game, 3, -3).getColor());
+        assertEquals(HexGame.END_GAME, code);
+    }
 
-        tile = move(game, -1, 2);
-        errorCode = game.play(false);
-        assertEquals(HexColor.RED, tile.getColor());
+    @Test
+    public void test_moveToAndPlayBluePlayer() {
+        HexGame game = new HexGame(3);
 
-        tile = move(game, -1, -1);
-        errorCode = game.play(false);
-        assertEquals(HexColor.BLUE, tile.getColor());
+        move(game, -3, 3).setColor(HexColor.BLUE);
+        move(game, -2, 2).setColor(HexColor.BLUE);
+        move(game, -1, 2).setColor(HexColor.BLUE);
+        move(game, 0, 2).setColor(HexColor.BLUE);
+        game.play(false);
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        game.moveTo(0, 1);
+        int code = game.play(false);
+
+        assertEquals(HexColor.RED, move(game, 0, 0).getColor());
+        assertEquals(HexColor.BLUE, move(game, 0, 3).getColor());
+        assertEquals(HexGame.END_GAME, code);
     }
 
     @Test
@@ -219,6 +236,23 @@ public class TestHexGame {
 
         Collection<HexTile> helperTiles = game.updateHelper();
         assertEquals(0, helperTiles.size());
+    }
+
+    @Test
+    public void test_getStats() {
+        HexGame game = new HexGame(3);
+        game.moveTo(0, 0);
+        game.play(false);
+
+        HexStats stats = game.getStats();
+        assertNotNull(stats);
+    }
+
+    @Test
+    public void test_getPlayers() {
+        HexGame game = new HexGame(3);
+        assertNotNull(game.getPlayer1());
+        assertNotNull(game.getPlayer2());
     }
 
     public static HexTile move(HexGame game, int q, int r) {

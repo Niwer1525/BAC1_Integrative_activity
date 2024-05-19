@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import hexmo.domains.HexGame;
 import hexmo.domains.IHexGameFactory;
-import hexmo.domains.TestHexGame;
 import hexmo.domains.board.tiles.HexTile;
 import hexmo.domains.player.HexColor;
 import hexmo.supervisors.commons.TileType;
@@ -45,25 +44,6 @@ public class PlayGameSupervisor {
 		if (ViewId.MAIN_MENU == fromView) {
 			view.clearTiles(); // O(n) ou n correspond au nombre de cases que contient la collection de la vue
 			view.setActiveTile(0, 0);
-
-			//RED
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -4).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -3).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, -2).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), -1, -1).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), -1, 0).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, 0).setColor(HexColor.RED);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, 0).setColor(HexColor.RED);
-			
-			//BLUE
-			TestHexGame.move(this.gameFactory.getCurrentGame(), -4, 2).setColor(HexColor.BLUE);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), -3, 2).setColor(HexColor.BLUE);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), -2, 2).setColor(HexColor.BLUE);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), -1, 2).setColor(HexColor.BLUE);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 0, 2).setColor(HexColor.BLUE);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, 2).setColor(HexColor.BLUE);
-			TestHexGame.move(this.gameFactory.getCurrentGame(), 1, 3).setColor(HexColor.BLUE);
-
 			this.drawBoard(true); // O(n) ou n correspond au nombre de cases que contient la collection produite par getTiles()
 		}
 	}
@@ -96,16 +76,16 @@ public class PlayGameSupervisor {
 
 	private void handlePlay(int playErrorCode) {
 		switch (playErrorCode) {
-			case HexGame.NO_PLAY_ERROR:
+			case HexGame.NO_PLAY_ERROR: // If there is no errors, then draw the bord for the next turn
 				this.drawBoard(false);
 				break;
-			case HexGame.ERROR_TILE_NOT_VALID:
+			case HexGame.ERROR_TILE_NOT_VALID: // If the tile is not valid, then display an error message
 				view.displayErrorMessage(HexGame.TILE_INCOMPATIBLE_COLOR);
 				break;
-			case HexGame.ERROR_TILE_CLAIMED:
+			case HexGame.ERROR_TILE_CLAIMED: // If the tile is already claimed, then display an error message
 				view.displayErrorMessage(HexGame.TILE_ALREADY_CLAIMED);
 				break;
-			case HexGame.END_GAME:
+			case HexGame.END_GAME: // If the game is over, then go to the end game view
 				view.goTo(ViewId.END_GAME);
 				break;
 			default: break;

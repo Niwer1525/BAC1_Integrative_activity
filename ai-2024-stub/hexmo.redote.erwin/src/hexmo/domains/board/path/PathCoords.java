@@ -92,7 +92,7 @@ public class PathCoords {
 
     @Override
     public int hashCode() {
-        return this.coords.hashCode() + this.length;
+        return this.coords.hashCode();
     }
 
     @Override
